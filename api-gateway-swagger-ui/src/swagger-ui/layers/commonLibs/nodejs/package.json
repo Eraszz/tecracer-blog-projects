@@ -1,0 +1,11 @@
+{
+    "name": "swagger-ui",
+    "version": "1.0.0",
+    "main": "app.js",
+    "keywords": ["swagger-ui", "aws-api-gateway", "aws-lambda", "node-js"],
+    "license": "MIT",
+    "dependencies": {
+      "serverless-http": "^2.6.1",
+      "swagger-ui-express": "^4.1.6"
+    }
+  }

@@ -1,0 +1,162 @@
+---
+swagger: "2.0"
+info:
+  version: "2023-03-07T09:51:20Z"
+  title: ${title}
+schemes:
+- "https"
+paths:
+  /api-docs:
+    get:
+      responses: {}
+      x-amazon-apigateway-integration:
+        uri: "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/${swagger_ui_handler}/invocations"
+        httpMethod: "POST"
+        passthroughBehavior: "when_no_match"
+        timeoutInMillis: 29000
+        type: "aws_proxy"
+  /api-docs/{proxy+}:
+    get:
+      parameters:
+      - name: "proxy"
+        in: "path"
+        required: true
+        type: "string"
+      responses: {}
+      x-amazon-apigateway-integration:
+        uri: "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/${swagger_ui_handler}/invocations"
+        httpMethod: "POST"
+        passthroughBehavior: "when_no_match"
+        timeoutInMillis: 29000
+        type: "aws_proxy"
+  /orders:
+    get:
+      produces:
+      - "application/json"
+      parameters:
+      - name: "orderDate"
+        in: "query"
+        required: false
+        type: "string"
+      - name: "userid"
+        in: "query"
+        required: false
+        type: "string"
+      responses:
+        "200":
+          description: "200 response"
+          schema:
+            $ref: "#/definitions/ordersResponse"
+      x-amazon-apigateway-integration:
+        uri: "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/${orders_handler}/invocations"
+        httpMethod: "POST"
+        passthroughBehavior: "when_no_match"
+        timeoutInMillis: 29000
+        type: "aws_proxy"
+  /users:
+    get:
+      produces:
+      - "application/json"
+      parameters:
+      - name: "dateOfBirth"
+        in: "query"
+        required: false
+        type: "string"
+      - name: "country"
+        in: "query"
+        required: false
+        type: "string"
+      responses:
+        "200":
+          description: "200 response"
+          schema:
+            $ref: "#/definitions/usersResponse"
+      x-amazon-apigateway-integration:
+        uri: "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/${users_handler}/invocations"
+        httpMethod: "POST"
+        passthroughBehavior: "when_no_match"
+        timeoutInMillis: 29000
+        type: "aws_proxy"
+definitions:
+  usersDataObject:
+    type: "object"
+    properties:
+      firstName:
+        type: "string"
+      lastName:
+        type: "string"
+      country:
+        type: "string"
+      dateOfBirth:
+        type: "string"
+        format: "date"
+      address:
+        type: "string"
+    title: "Users Data"
+  ordersDataObject:
+    type: "object"
+    properties:
+      user:
+        type: "string"
+      shippingAddress:
+        type: "string"
+      invoiceAddress:
+        type: "string"
+      orderDate:
+        type: "string"
+        format: "date"
+    title: "Orders Data"
+  usersResponse:
+    type: "object"
+    properties:
+      users:
+        type: "array"
+        items:
+          $ref: "#/definitions/usersResponseObject"
+      queryParameters:
+        $ref: "#/definitions/usersQueryParameters"
+    title: "Multi Users Response"
+  ordersQueryParameters:
+    type: "object"
+    properties:
+      userid:
+        type: "string"
+      orderDate:
+        type: "string"
+        format: "date"
+    title: "Users Query Parameters"
+  usersQueryParameters:
+    type: "object"
+    properties:
+      country:
+        type: "string"
+      dateOfBirth:
+        type: "string"
+        format: "date"
+    title: "Users Query Parameters"
+  ordersResponse:
+    type: "object"
+    properties:
+      orders:
+        type: "array"
+        items:
+          $ref: "#/definitions/ordersResponseObject"
+      queryParameters:
+        $ref: "#/definitions/ordersQueryParameters"
+    title: "Multi Orders Response"
+  ordersResponseObject:
+    type: "object"
+    properties:
+      orderId:
+        type: "number"
+      data:
+        $ref: "#/definitions/ordersDataObject"
+    title: "Orders"
+  usersResponseObject:
+    type: "object"
+    properties:
+      userId:
+        type: "number"
+      data:
+        $ref: "#/definitions/usersDataObject"
+    title: "Users"
