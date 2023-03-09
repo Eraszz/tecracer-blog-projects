@@ -108,9 +108,9 @@ resource "aws_lambda_layer_version" "swagger_ui_handler" {
   filename            = "${path.module}/src/swagger-ui/build/commonLibs.zip"
   compatible_runtimes = ["nodejs14.x"]
 
-  depends_on = [
-    data.archive_file.commonLibs
-  ]
+#  depends_on = [
+#    data.archive_file.commonLibs
+#  ]
 }
 
 resource "aws_iam_role" "swagger_ui_handler" {
@@ -153,14 +153,14 @@ resource "aws_iam_role_policy_attachment" "swagger_ui_handler_api_gateway_access
 #   }
 # }
 
-data "archive_file" "commonLibs" {
-  type = "zip"
+#data "archive_file" "commonLibs" {
+#  type = "zip"
+#
+#  source_dir  = "${path.module}/src/swagger-ui/layers/commonLibs"
+#  output_path = "${path.module}/src/swagger-ui/build/commonLibs.zip"
+#
+ #depends_on = [null_resource.lambda_swagger_ui_nodejs_layer]
 
-  source_dir  = "${path.module}/src/swagger-ui/layers/commonLibs"
-  output_path = "${path.module}/src/swagger-ui/build/commonLibs.zip"
-
-  #depends_on = [null_resource.lambda_swagger_ui_nodejs_layer]
-}
 
 ################################################################################
 # Create Deployment and API Gateway Stage
