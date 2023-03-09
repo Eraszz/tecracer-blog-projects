@@ -1,29 +1,15 @@
 ################################################################################
-# Set Locals
-################################################################################
-
-locals {
-  lambda_proxies = {
-    orders = "${path.module}/src/orders/",
-    users  = "${path.module}/src/users/",
-  }
-}
-
-
-################################################################################
-# Create REST API
+# REST API
 ################################################################################
 
 resource "aws_api_gateway_rest_api" "this" {
-  name        = var.api_name
+  name        = "serverless-swagger-ui"
   description = "This is a test API Gateway to demonstrate the use of Swagger UI"
 
   body = templatefile("${path.module}/api-gateway-definition.yaml",
     {
-      title              = var.api_name
-      orders_handler     = module.lambda_proxy["orders"].alias_arn
-      users_handler      = module.lambda_proxy["users"].alias_arn
-      swagger_ui_handler = module.lambda_swagger_ui.alias_arn
+      orders_handler_arn     = aws_lambda_function.orders_handler.arn
+      swagger_ui_handler_arn = aws_lambda_function.swagger_ui_handler.arn
     }
   )
 
@@ -32,6 +18,149 @@ resource "aws_api_gateway_rest_api" "this" {
   }
 }
 
+
+################################################################################
+# Orders Handler
+################################################################################
+
+resource "aws_lambda_function" "orders_handler" {
+  function_name = "orders-handler"
+  role          = aws_iam_role.orders_handler.arn
+
+  filename         = data.archive_file.orders_handler.output_path
+  source_code_hash = data.archive_file.orders_handler.output_base64sha256
+  handler          = "index.lambda_handler"
+  layers           = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python39:1"]
+  runtime          = "python3.9"
+
+}
+
+resource "aws_lambda_permission" "orders_handler" {
+  function_name = aws_lambda_function.orders_handler.function_name
+
+  action     = "lambda:InvokeFunction"
+  principal  = "apigateway.amazonaws.com"
+  source_arn = "${aws_api_gateway_rest_api.this.execution_arn}/*"
+}
+
+data "archive_file" "orders_handler" {
+  type        = "zip"
+  source_file = "${path.module}/src/orders/index.py"
+  output_path = "${path.module}/src/orders/python.zip"
+}
+
+resource "aws_iam_role" "orders_handler" {
+  name = "orders-handler"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        }
+      },
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "orders_handler" {
+  role       = aws_iam_role.orders_handler.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+
+################################################################################
+# Swagger UI Handler
+################################################################################
+
+resource "aws_lambda_function" "swagger_ui_handler" {
+  function_name = "swagger-ui-handler"
+  role          = aws_iam_role.swagger_ui_handler.arn
+
+  filename         = data.archive_file.swagger_ui_handler.output_path
+  source_code_hash = data.archive_file.swagger_ui_handler.output_base64sha256
+  handler          = "app.handler"
+  layers           = [aws_lambda_layer_version.swagger_ui_handler.arn]
+  runtime          = "nodejs14.x"
+
+}
+
+resource "aws_lambda_permission" "swagger_ui_handler" {
+  function_name = aws_lambda_function.swagger_ui_handler.function_name
+
+  action     = "lambda:InvokeFunction"
+  principal  = "apigateway.amazonaws.com"
+  source_arn = "${aws_api_gateway_rest_api.this.execution_arn}/*"
+}
+
+data "archive_file" "swagger_ui_handler" {
+  type        = "zip"
+  source_file = "${path.module}/src/swagger-ui/app.js"
+  output_path = "${path.module}/src/swagger-ui/app.zip"
+}
+
+resource "aws_lambda_layer_version" "swagger_ui_handler" {
+  layer_name = "swagger-ui-commonLibs"
+
+  filename            = "${path.module}/src/swagger-ui/build/commonLibs.zip"
+  compatible_runtimes = ["nodejs14.x"]
+
+  depends_on = [
+    data.archive_file.commonLibs
+  ]
+}
+
+resource "aws_iam_role" "swagger_ui_handler" {
+  name = "swagger-ui-handler"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        }
+      },
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "swagger_ui_handler_cloudwatch_access" {
+  role       = aws_iam_role.swagger_ui_handler.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+resource "aws_iam_role_policy_attachment" "swagger_ui_handler_api_gateway_access" {
+  role       = aws_iam_role.swagger_ui_handler.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonAPIGatewayAdministrator"
+}
+
+
+################################################################################
+# OPTIONAL: Perform npm install of dependencies and create zip file
+################################################################################
+
+# resource "null_resource" "lambda_swagger_ui_nodejs_layer" {
+
+#   provisioner "local-exec" {
+#     working_dir = "${path.module}/src/swagger-ui/layers/commonLibs/nodejs"
+#     command     = "npm install"
+#   }
+# }
+
+data "archive_file" "commonLibs" {
+  type = "zip"
+
+  source_dir  = "${path.module}/src/swagger-ui/layers/commonLibs"
+  output_path = "${path.module}/src/swagger-ui/build/commonLibs.zip"
+
+  #depends_on = [null_resource.lambda_swagger_ui_nodejs_layer]
+}
 
 ################################################################################
 # Create Deployment and API Gateway Stage
@@ -49,91 +178,4 @@ resource "aws_api_gateway_stage" "this" {
   deployment_id = aws_api_gateway_deployment.this.id
   rest_api_id   = aws_api_gateway_rest_api.this.id
   stage_name    = "v1"
-}
-
-
-################################################################################
-# Create Lambda Orders and Users Request Handlers
-################################################################################
-
-module "lambda_proxy" {
-  for_each = local.lambda_proxies
-
-  source = "./modules/lambda"
-
-  function_name = "handler-${each.key}"
-  role          = module.iam_role_lambda_proxy[each.key].arn
-
-  filename         = data.archive_file.lambda_proxy[each.key].output_path
-  handler          = "index.lambda_handler"
-  source_code_hash = data.archive_file.lambda_proxy[each.key].output_base64sha256
-  publish          = true
-  layers           = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python39:1"]
-  runtime          = "python3.9"
-
-  timeout     = 30
-  memory_size = 128
-
-  alias = {
-    name             = "v1"
-    function_version = "$LATEST"
-  }
-
-  permission = {
-    action     = "lambda:InvokeFunction"
-    principal  = "apigateway.amazonaws.com"
-    qualifier  = "v1"
-    source_arn = "${aws_api_gateway_rest_api.this.execution_arn}/*"
-  }
-}
-
-
-data "archive_file" "lambda_proxy" {
-  for_each = local.lambda_proxies
-
-  type        = "zip"
-  output_path = "${each.value}/python.zip"
-
-  dynamic "source" {
-    for_each = fileset("${each.value}/", "*.py")
-
-    content {
-      content  = file("${each.value}/${source.value}")
-      filename = basename(source.value)
-    }
-  }
-}
-
-
-################################################################################
-# Create Lambda Orders and Users IAM Roles
-################################################################################
-
-data "aws_iam_policy_document" "log_access_handler" {
-  statement {
-
-    actions = [
-      "logs:CreateLogStream",
-      "logs:PutLogEvents"
-    ]
-
-    resources = [
-      "*"
-    ]
-  }
-}
-
-
-module "iam_role_lambda_proxy" {
-  for_each = local.lambda_proxies
-
-  source = "./modules/iam_role"
-
-  name = "handler-${each.key}"
-
-  principal = { Service = ["lambda.amazonaws.com"] }
-  actions   = ["sts:AssumeRole"]
-
-  policy_document = {
-  log-access = data.aws_iam_policy_document.log_access_handler.json }
 }
