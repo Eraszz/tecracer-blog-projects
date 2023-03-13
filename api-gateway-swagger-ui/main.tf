@@ -29,9 +29,8 @@ resource "aws_lambda_function" "orders_handler" {
 
   filename         = data.archive_file.orders_handler.output_path
   source_code_hash = data.archive_file.orders_handler.output_base64sha256
-  handler          = "index.lambda_handler"
-  layers           = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python39:1"]
-  runtime          = "python3.9"
+  handler          = "orders.handler"
+  runtime          = "nodejs18.x"
 
 }
 
@@ -45,8 +44,8 @@ resource "aws_lambda_permission" "orders_handler" {
 
 data "archive_file" "orders_handler" {
   type        = "zip"
-  source_file = "${path.module}/src/orders/index.py"
-  output_path = "${path.module}/src/orders/python.zip"
+  source_file = "${path.module}/src/orders/orders.js"
+  output_path = "${path.module}/src/orders/orders.zip"
 }
 
 resource "aws_iam_role" "orders_handler" {
