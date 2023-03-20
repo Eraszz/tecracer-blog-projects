@@ -1,0 +1,58 @@
+
+name: Deployment
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  AWS_REGION : "eu-central-1"
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+
+  deployment:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-region: ${{ env.AWS_REGION }}
+        role-to-assume: ${{ secrets.DEPLOYMENT_IAM_ROLE_ARN }}
+        role-session-name: OIDCSession
+
+    - name: Terraform Init
+      id: init
+      run: |
+        echo "\`\`\`\n" >> $GITHUB_STEP_SUMMARY
+        terraform init -no-color >> $GITHUB_STEP_SUMMARY
+        echo "\`\`\`\n" >> $GITHUB_STEP_SUMMARY
+
+    - name: Terraform Plan (On Pull Request)
+      id: plan
+      if: github.event_name == 'pull_request'
+      run: |
+        echo "\`\`\`\n" >> $GITHUB_STEP_SUMMARY
+        terraform plan -no-color >> $GITHUB_STEP_SUMMARY
+        echo "\`\`\`\n" >> $GITHUB_STEP_SUMMARY
+
+
+    - name: Terraform Apply (On Merge)
+      id: apply
+      if: github.event_name != 'pull_request'
+      run: |
+        echo "\`\`\`\n" >> $GITHUB_STEP_SUMMARY
+        terraform apply -no-color -auto-approve >> $GITHUB_STEP_SUMMARY
+        echo "\`\`\`\n" >> $GITHUB_STEP_SUMMARY

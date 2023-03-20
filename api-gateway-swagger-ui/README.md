@@ -22,7 +22,7 @@ In this example, we will create an API Gateway with three resources. The first r
 1. Clone the repo
 2. Run `terraform init` to initialize the Terraform environment
 3. Run `terraform plan` and `terraform apply` to deploy the infrastructure
-5. Open the URL which is returned by Terraform as the output`swagger_ui_endpoint`
+4. Open the URL which is returned by Terraform as the output`swagger_ui_endpoint`
 
 ### Result
 

@@ -1,6 +1,6 @@
 # Open Policy Agent for Terraform: Build policy-based guardrails for your IaC deployments
 
-This is the repository for the official tecRacer blog post [Open Policy Agent for Terraform: Build policy-based guardrails for your IaC deployments]().
+This is the repository for the official tecRacer blog post [Open Policy Agent for Terraform: Build policy-based guardrails for your IaC deployments](https://www.tecracer.com/blog/2023/03/open-policy-agent-for-terraform-build-policy-based-guardrails-for-your-iac-deployments.html).
 
 ## Workflow
 
@@ -20,7 +20,7 @@ The first step of the process starts with the developer and the development of T
 ### Setup
 
 1. Clone the repo
-2. Run `terraform init` to initialized the Terraform environment
+2. Run `terraform init` to initialize the Terraform environment
 3. Run `terraform plan -out tfplan` to generate a binary Terraform output file
 3. Run `terraform show -json tfplan > tfplan.json` to convert the binary plan output file into JSON for OPA
 5. Run `opa exec --decision terraform/analysis/authz -b policy/ tfplan.json` to evaluate the compliance of the Terraform configuration via the OPA Policy
