@@ -6,7 +6,7 @@ This is the repository for the official tecRacer blog post [Version Control your
 
 As an introduction, I would like to guide you through the infrastructure that we will set up. As seen in the architecture diagram below, we will create a simple pipeline consisting of S3 Buckets, Lambda, SSM, EC2, and an Aurora Serverless cluster.
 
-![architecture](media/version-control-your-database-architecture.png)
+![architecture](media/architecture.png)
 
 We will start by setting up a couple of S3 Buckets. We will create an S3 Bucket for each Database that should be managed by Flyway. In our example, we will manage two databases in our Aurora Serverless cluster, `Users` and `Products`, and will therefore create two corresponding Buckets. Each S3 Bucket will contain the versioned Flyway migration files for its database. Every time a file is uploaded to one of the S3 Buckets, a Lambda function will be triggered. The Lambda function functions as the `Flyway Trigger` and will execute an `SSM Run Command` on the `Flyway Host`. The `Flyway Host` is an EC2 Instance that has Flyway installed and is able to connect to the Aurora cluster. The `SSM Run Command` will execute Flyway on the `Flyway Host` and perform the database migration.
 
