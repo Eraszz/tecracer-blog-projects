@@ -1,6 +1,6 @@
 # Version Control your Database: Use Flyway on AWS to automate database migrations and increase deployment reliability
 
-This is the repository for the official tecRacer blog post [Version Control your Database: Use Flyway on AWS to automate database migrations and increase deployment reliability]().
+This is the repository for the official tecRacer blog post [Version Control your Database: Use Flyway on AWS to automate database migrations and increase deployment reliability](https://www.tecracer.com/blog/2023/03/version-control-your-database-use-flyway-on-aws-to-automate-database-migrations-and-increase-deployment-reliability.html).
 
 # Architecture
 
