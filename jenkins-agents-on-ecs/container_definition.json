@@ -1,0 +1,31 @@
+[
+    {
+      "name": "${container_name}",
+      "image": "${container_image}",
+      "portMappings": [
+          {
+            "containerPort": 8080
+          },
+          {
+            "containerPort": 50000
+          }
+      ],
+      "mountPoints": [
+        {
+          "sourceVolume": "${source_volume}",
+          "containerPath": "/var/jenkins_home"
+        }
+      ],
+      "LogConfiguration":
+        {
+          "LogDriver": "awslogs",
+          "Options":
+            {
+                "awslogs-group": "${awslogs_group}",
+                "awslogs-region": "${awslogs_region}",
+                "awslogs-stream-prefix": "jenkins-master"
+            }
+          
+        }
+    }
+  ]
