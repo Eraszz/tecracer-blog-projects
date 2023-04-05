@@ -13,7 +13,7 @@ resource "aws_service_discovery_private_dns_namespace" "this" {
 ################################################################################
 
 resource "aws_service_discovery_service" "this" {
-  name = "jenkins-master"
+  name = var.jenkins_master_identifier
 
   dns_config {
     namespace_id   = aws_service_discovery_private_dns_namespace.this.id

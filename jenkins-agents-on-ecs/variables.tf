@@ -45,3 +45,21 @@ variable "application_name" {
   type        = string
   default     = "jenkins-agents-on-ecs"
 }
+
+variable "jenkins_master_identifier" {
+  description = "Name of the jenkins master"
+  type        = string
+  default     = "jenkins-master"
+}
+
+variable "jenkins_agent_port" {
+  description = "Port Jenkins agent uses to connect to master"
+  type        = number
+  default     = 50000
+}
+
+variable "jenkins_master_port" {
+  description = "Port used to connect to Jenkins master"
+  type        = number
+  default     = 8080
+}

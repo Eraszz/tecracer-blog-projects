@@ -14,11 +14,26 @@ resource "aws_ecs_cluster" "this" {
 resource "aws_ecs_task_definition" "this" {
   family = var.application_name
   container_definitions = templatefile("${path.module}/container_definition.json", {
-    container_name   = "jenkins-master",
-    container_image  = "jenkins/jenkins:2.398-jdk11",
+    container_name   = var.jenkins_master_identifier,
+    container_image  = "${data.aws_caller_identity.this.account_id}.dkr.ecr.eu-central-1.amazonaws.com/container-assets:jenkins-master",
+    jenkins_master_port = var.jenkins_master_port
+    jenkins_agent_port = var.jenkins_agent_port
     source_volume    = "home",
     awslogs_group    = aws_cloudwatch_log_group.this.name,
     awslogs_region   = data.aws_region.current.name,
+
+    user_name = "admin",
+    user_password = "admin",
+    ecs_cluster_arn = aws_ecs_cluster.this.arn,
+    ecs_cluster_name = aws_ecs_cluster.this.name,
+    ecs_region = data.aws_region.current.name,
+    jenkins_url = "http://${aws_lb.this.dns_name}",
+    jenkins_master_agent_tunnel = "${var.jenkins_master_identifier}.${var.application_name}:${var.jenkins_agent_port}",
+    ecs_execution_role_arn = aws_iam_role.execution.arn,
+    ecs_agent_task_role_arn = aws_iam_role.agent.arn,
+    jenkins_agent_image = "${data.aws_caller_identity.this.account_id}.dkr.ecr.eu-central-1.amazonaws.com/container-assets:jenkins-agent",
+    jenkins_agent_security_group = aws_security_group.ecs_jenkins_agent.id,
+    jenkins_agent_subnet_ids = join(",", local.private_subnet_ids),
     }
   )
 
@@ -184,7 +199,8 @@ data "aws_iam_policy_document" "iam_access" {
     ]
 
     resources = [
-      aws_iam_role.execution.arn
+      aws_iam_role.execution.arn,
+      aws_iam_role.agent.arn
     ]
   }
 }
@@ -197,6 +213,33 @@ resource "aws_iam_policy" "iam_access" {
 resource "aws_iam_role_policy_attachment" "iam_access" {
   role       = aws_iam_role.task.name
   policy_arn = aws_iam_policy.iam_access.arn
+}
+
+
+################################################################################
+# ECS agent role
+################################################################################
+
+resource "aws_iam_role" "agent" {
+  name = "ecs-agent"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
+      },
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "admin_access" {
+  role       = aws_iam_role.agent.name
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
 
 
@@ -219,13 +262,13 @@ resource "aws_ecs_service" "this" {
 
   load_balancer {
     target_group_arn = aws_lb_target_group.this.arn
-    container_name   = "jenkins-master"
-    container_port   = 8080
+    container_name   = var.jenkins_master_identifier
+    container_port   = var.jenkins_master_port
   }
 
   service_registries {
     registry_arn = aws_service_discovery_service.this.arn
-    port         = 50000
+    port         = var.jenkins_agent_port
   }
 }
 
@@ -243,8 +286,8 @@ resource "aws_security_group_rule" "alb_ingress" {
   security_group_id = aws_security_group.ecs_service.id
 
   type                     = "ingress"
-  from_port                = 8080
-  to_port                  = 8080
+  from_port                = var.jenkins_master_port
+  to_port                  = var.jenkins_master_port
   protocol                 = "tcp"
   source_security_group_id = aws_security_group.alb.id
 }
@@ -263,8 +306,8 @@ resource "aws_security_group_rule" "jenkins_agent_ingress" {
   security_group_id = aws_security_group.ecs_service.id
 
   type                     = "ingress"
-  from_port                = 50000
-  to_port                  = 50000
+  from_port                = var.jenkins_agent_port
+  to_port                  = var.jenkins_agent_port
   protocol                 = "tcp"
   source_security_group_id = aws_security_group.ecs_jenkins_agent.id
 }
