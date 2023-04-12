@@ -1,0 +1,146 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@1289.vd1c337fd5354">
+  <actions>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobAction plugin="pipeline-model-definition@2.2125.vddb_a_44a_d605e"/>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction plugin="pipeline-model-definition@2.2125.vddb_a_44a_d605e">
+      <jobProperties/>
+      <triggers/>
+      <parameters/>
+      <options/>
+    </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
+  </actions>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@1.37.0">
+      <projectUrl>https://github.com/Eraszz/tecracer-blog-projects.git/</projectUrl>
+      <displayName></displayName>
+    </com.coravy.hudson.plugins.github.GithubProjectProperty>
+  </properties>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@3653.v07ea_433c90b_4">
+    <script>pipeline {
+    agent {
+        label &apos;agent&apos;
+    }
+    stages {
+        stage (&apos;git checkout&apos;) {
+
+            steps {
+                echo &apos;git checkout&apos;            
+                
+                git branch: &apos;main&apos;,
+                    url: &apos;https://github.com/Eraszz/tecracer-blog-projects.git&apos;
+            }
+        }
+
+        stage (&apos;terraform init&apos;) {
+
+            steps {
+                echo &apos;terraform init&apos;
+                                
+                dir(&quot;api-gateway-swagger-ui&quot;) {
+                    script {
+                        sh &apos;terraform init -no-color&apos;
+                    }
+                }
+            }
+        }
+        
+        stage (&apos;terraform plan&apos;) {
+
+            steps {
+                echo &apos;terraform plan&apos;
+
+                dir(&quot;api-gateway-swagger-ui&quot;) {
+                    script {
+                        sh &apos;terraform plan -out=tfplan -input=false -no-color&apos;
+                    }
+                }    
+            }
+        }
+        
+        stage (&apos;wait for approval (Apply)&apos;) {
+            steps {
+                timeout(time: 30, unit: &apos;MINUTES&apos;) {
+                    script {
+                        env.RELEASE_TO_PROD =   input message: &apos;Please approve Terraform plan&apos;, 
+                                                parameters: [string(description: &apos;Type in \&apos;yes\&apos; if you want to deploy this terraform build in production. Only \&apos;yes\&apos; will be accepted to approve.&apos;, 
+                                                name: &apos;Promote to production?&apos;, 
+                                                trim: true)]
+                    }
+                }
+
+            echo &quot;User input: ${env.RELEASE_TO_PROD}&quot;
+            }
+
+        }
+
+        stage (&apos;terraform apply&apos;) {
+
+            when {
+                expression {
+                    env.RELEASE_TO_PROD == &apos;yes&apos;
+                }
+            }
+
+            steps {
+                echo &apos;terraform apply&apos;
+
+                dir(&quot;api-gateway-swagger-ui&quot;) {
+                    script {
+                        sh &apos;terraform apply -auto-approve -no-color tfplan&apos;
+                    }
+                }
+            }
+        }
+    
+        stage (&apos;wait for approval (Destroy)&apos;) {
+            steps {
+                timeout(time: 30, unit: &apos;MINUTES&apos;) {
+                    script {
+                        env.DESTROY =   input message: &apos;Please approve Terraform destroy&apos;, 
+                                                parameters: [string(description: &apos;Type in \&apos;yes\&apos; if you want to destroy this terraform build. Only \&apos;yes\&apos; will be accepted to approve.&apos;, 
+                                                name: &apos;Destroy?&apos;, 
+                                                trim: true)]
+                    }
+                }
+
+            echo &quot;User input: ${env.DESTROY}&quot;
+            }
+
+        }
+
+        stage (&apos;terraform destroy&apos;) {
+
+            when {
+                expression {
+                    env.DESTROY == &apos;yes&apos;
+                }
+            }
+
+            steps {
+                echo &apos;terraform destroy&apos;
+                
+                dir(&quot;api-gateway-swagger-ui&quot;) {
+                    script {
+                    sh &apos;terraform destroy -auto-approve -no-color&apos;
+                    }   
+                }
+            }
+        }
+    }
+
+    post { 
+        always { 
+            cleanWs()
+        }
+    }
+
+}
+
+</script>
+    <sandbox>true</sandbox>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>

@@ -1,0 +1,8 @@
+build-timeout:1.28
+ws-cleanup:0.44
+workflow-aggregator:596.v8c21c963d92d
+git:5.0.0
+github:1.37.0
+amazon-ecs:1.48
+terraform:1.0.10
+configuration-as-code:1625.v27444588cc3d

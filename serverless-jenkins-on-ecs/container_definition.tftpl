@@ -1,0 +1,89 @@
+[
+    {
+      "name": "${container_name}",
+      "image": "${container_image}",
+      "portMappings": [
+          {
+            "containerPort": ${jenkins_master_port}
+          },
+          {
+            "containerPort": ${jenkins_agent_port}
+          }
+      ],
+      "mountPoints": [
+        {
+          "sourceVolume": "${source_volume}",
+          "containerPath": "/var/jenkins_home"
+        }
+      ],
+      "LogConfiguration":
+        {
+          "LogDriver": "awslogs",
+          "Options":
+            {
+                "awslogs-group": "${awslogs_group}",
+                "awslogs-region": "${awslogs_region}",
+                "awslogs-stream-prefix": "jenkins-master"
+            }
+          
+        },
+        "environment": [
+          {
+            "name": "USER_NAME",
+            "value": "${user_name}"
+          },
+          {
+            "name": "USER_PASSWORD",
+            "value": "${user_password}"
+          },
+          {
+            "name": "ECS_CLUSTER_ARN",
+            "value": "${ecs_cluster_arn}"
+          },
+          {
+            "name": "ECS_CLUSTER_NAME",
+            "value": "${ecs_cluster_name}"
+          },
+          {
+            "name": "ECS_REGION",
+            "value": "${ecs_region}"
+          },
+          {
+            "name": "JENKINS_URL",
+            "value": "${jenkins_url}"
+          },
+          {
+            "name": "JENKINS_MASTER_AGENT_TUNNEL",
+            "value": "${jenkins_master_agent_tunnel}"
+          },
+          {
+            "name": "ECS_EXECUTION_ROLE_ARN",
+            "value": "${ecs_execution_role_arn}"
+          },
+          {
+            "name": "ECS_AGENT_TASK_ROLE_ARN",
+            "value": "${ecs_agent_task_role_arn}"
+          },
+          {
+            "name": "JENKINS_AGENT_IMAGE",
+            "value": "${jenkins_agent_image}"
+          },
+          {
+            "name": "JENKINS_AGENT_CLOUDWATCH_LOG_GROUP_NAME",
+            "value": "${awslogs_group}"
+          },
+          {
+            "name": "JENKINS_AGENT_CLOUDWATCH_LOG_GROUP_REGION",
+            "value": "${awslogs_region}"
+          },
+          {
+            "name": "JENKINS_AGENT_SECURITY_GROUP",
+            "value": "${jenkins_agent_security_group}"
+          },
+          {
+            "name": "JENKINS_AGENT_SUBNET_IDS",
+            "value": "${jenkins_agent_subnet_ids}"
+          }       
+      ]
+    }
+  ]
