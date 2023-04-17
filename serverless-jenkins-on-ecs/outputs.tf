@@ -1,6 +1,6 @@
 output "private_subnet_ids" {
   description = "List of private subnet ids"
-  value       = local.private_subnet_ids
+  value       = join(",", local.private_subnet_ids)
 }
 
 output "ecs_jenkins_agent_security_group_id" {

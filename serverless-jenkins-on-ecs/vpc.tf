@@ -11,6 +11,10 @@ locals {
 resource "aws_vpc" "this" {
   cidr_block           = var.vpc_cidr_block
   enable_dns_hostnames = true
+
+  tags = {
+    Name = var.application_name
+  }
 }
 
 
@@ -28,7 +32,7 @@ resource "aws_subnet" "public" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name = "public-${each.value.availability_zone}"
+    Name = format("public-%s-%s", var.application_name, each.value.availability_zone)
   }
 }
 
@@ -88,7 +92,7 @@ resource "aws_subnet" "private" {
   availability_zone = each.value.availability_zone
 
   tags = {
-    Name = "private-${each.value.availability_zone}"
+    Name = format("private-%s-%s", var.application_name, each.value.availability_zone)
   }
 }
 
@@ -114,7 +118,7 @@ resource "aws_nat_gateway" "this" {
   allocation_id = aws_eip.this[each.key].id
 
   tags = {
-    Name = "private-${each.value.availability_zone}"
+    Name = format("private-%s-%s", var.application_name, each.value.availability_zone)
   }
 }
 
@@ -129,7 +133,7 @@ resource "aws_route_table" "private" {
   vpc_id = aws_vpc.this.id
 
   tags = {
-    Name = "private-${each.value.availability_zone}"
+    Name = format("private-%s-%s", var.application_name, each.value.availability_zone)
   }
 }
 
@@ -152,4 +156,3 @@ resource "aws_route_table_association" "private" {
   subnet_id      = each.value.id
   route_table_id = aws_route_table.private[each.key].id
 }
-

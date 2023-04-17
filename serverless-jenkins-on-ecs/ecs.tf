@@ -15,7 +15,7 @@ resource "aws_ecs_task_definition" "this" {
   family = var.application_name
   container_definitions = templatefile("${path.module}/container_definition.tftpl", {
     container_name      = var.jenkins_master_identifier,
-    container_image     = "${data.aws_caller_identity.this.account_id}.dkr.ecr.eu-central-1.amazonaws.com/container-assets:jenkins-master",
+    container_image     = "${data.aws_caller_identity.this.account_id}.dkr.ecr.eu-central-1.amazonaws.com/${var.application_name}:jenkins-master",
     jenkins_master_port = var.jenkins_master_port
     jenkins_agent_port  = var.jenkins_agent_port
     source_volume       = "home",
@@ -31,7 +31,7 @@ resource "aws_ecs_task_definition" "this" {
     jenkins_master_agent_tunnel  = "${var.jenkins_master_identifier}.${var.application_name}:${var.jenkins_agent_port}",
     ecs_execution_role_arn       = aws_iam_role.execution.arn,
     ecs_agent_task_role_arn      = aws_iam_role.agent.arn,
-    jenkins_agent_image          = "${data.aws_caller_identity.this.account_id}.dkr.ecr.eu-central-1.amazonaws.com/container-assets:jenkins-agent",
+    jenkins_agent_image          = "${data.aws_caller_identity.this.account_id}.dkr.ecr.eu-central-1.amazonaws.com/${var.application_name}:jenkins-agent",
     jenkins_agent_security_group = aws_security_group.ecs_jenkins_agent.id,
     jenkins_agent_subnet_ids     = join(",", local.private_subnet_ids),
     }
