@@ -1,0 +1,120 @@
+pipeline {
+    agent {
+        label 'agent'
+    }
+    stages {
+        stage ('git checkout') {
+
+            steps {
+                echo 'git checkout'            
+                
+                git branch: 'main',
+                    url: 'https://github.com/Eraszz/tecracer-blog-projects.git'
+            }
+        }
+
+        stage ('terraform init') {
+
+            steps {
+                echo 'terraform init'
+                                
+                dir("api-gateway-swagger-ui") {
+                    script {
+                        sh 'terraform init -no-color'
+                    }
+                }
+            }
+        }
+        
+        stage ('terraform plan') {
+
+            steps {
+                echo 'terraform plan'
+
+                dir("api-gateway-swagger-ui") {
+                    script {
+                        sh 'terraform plan -out=tfplan -input=false -no-color'
+                    }
+                }    
+            }
+        }
+        
+        stage ('wait for approval (Apply)') {
+            steps {
+                timeout(time: 30, unit: 'MINUTES') {
+                    script {
+                        env.RELEASE_TO_PROD =   input message: 'Please approve Terraform plan', 
+                                                parameters: [string(description: 'Type in \'yes\' if you want to deploy this terraform build in production. Only \'yes\' will be accepted to approve.', 
+                                                name: 'Promote to production?', 
+                                                trim: true)]
+                    }
+                }
+
+            echo "User input: ${env.RELEASE_TO_PROD}"
+            }
+
+        }
+
+        stage ('terraform apply') {
+
+            when {
+                expression {
+                    env.RELEASE_TO_PROD == 'yes'
+                }
+            }
+
+            steps {
+                echo 'terraform apply'
+
+                dir("api-gateway-swagger-ui") {
+                    script {
+                        sh 'terraform apply -auto-approve -no-color tfplan'
+                    }
+                }
+            }
+        }
+    
+        stage ('wait for approval (Destroy)') {
+            steps {
+                timeout(time: 30, unit: 'MINUTES') {
+                    script {
+                        env.DESTROY =   input message: 'Please approve Terraform destroy', 
+                                                parameters: [string(description: 'Type in \'yes\' if you want to destroy this terraform build. Only \'yes\' will be accepted to approve.', 
+                                                name: 'Destroy?', 
+                                                trim: true)]
+                    }
+                }
+
+            echo "User input: ${env.DESTROY}"
+            }
+
+        }
+
+        stage ('terraform destroy') {
+
+            when {
+                expression {
+                    env.DESTROY == 'yes'
+                }
+            }
+
+            steps {
+                echo 'terraform destroy'
+                
+                dir("api-gateway-swagger-ui") {
+                    script {
+                    sh 'terraform destroy -auto-approve -no-color'
+                    }   
+                }
+            }
+        }
+    }
+
+    post { 
+        always { 
+            cleanWs()
+        }
+    }
+
+}
+
