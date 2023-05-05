@@ -23,6 +23,6 @@ private_subnets = {
 }
 
 application_name          = "serverless-jenkins-on-ecs"
-jenkins_master_identifier = "jenkins-master"
+jenkins_controller_identifier = "jenkins-controller"
 jenkins_agent_port        = 50000
-jenkins_master_port       = 8080
+jenkins_controller_port       = 8080

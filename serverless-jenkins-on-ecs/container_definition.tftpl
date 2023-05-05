@@ -4,7 +4,7 @@
       "image": "${container_image}",
       "portMappings": [
           {
-            "containerPort": ${jenkins_master_port}
+            "containerPort": ${jenkins_controller_port}
           },
           {
             "containerPort": ${jenkins_agent_port}
@@ -23,7 +23,7 @@
             {
                 "awslogs-group": "${awslogs_group}",
                 "awslogs-region": "${awslogs_region}",
-                "awslogs-stream-prefix": "jenkins-master"
+                "awslogs-stream-prefix": "jenkins-controller"
             }
           
         },
@@ -53,8 +53,8 @@
             "value": "${jenkins_url}"
           },
           {
-            "name": "JENKINS_MASTER_AGENT_TUNNEL",
-            "value": "${jenkins_master_agent_tunnel}"
+            "name": "JENKINS_CONTROLLER_AGENT_TUNNEL",
+            "value": "${jenkins_controller_agent_tunnel}"
           },
           {
             "name": "ECS_EXECUTION_ROLE_ARN",

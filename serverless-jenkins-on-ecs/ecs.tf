@@ -14,9 +14,9 @@ resource "aws_ecs_cluster" "this" {
 resource "aws_ecs_task_definition" "this" {
   family = var.application_name
   container_definitions = templatefile("${path.module}/container_definition.tftpl", {
-    container_name      = var.jenkins_master_identifier,
-    container_image     = "${data.aws_caller_identity.this.account_id}.dkr.ecr.eu-central-1.amazonaws.com/${var.application_name}:jenkins-master",
-    jenkins_master_port = var.jenkins_master_port
+    container_name      = var.jenkins_controller_identifier,
+    container_image     = "${data.aws_caller_identity.this.account_id}.dkr.ecr.eu-central-1.amazonaws.com/${var.application_name}:jenkins-controller",
+    jenkins_controller_port = var.jenkins_controller_port
     jenkins_agent_port  = var.jenkins_agent_port
     source_volume       = "home",
     awslogs_group       = aws_cloudwatch_log_group.this.name,
@@ -28,7 +28,7 @@ resource "aws_ecs_task_definition" "this" {
     ecs_cluster_name             = aws_ecs_cluster.this.name,
     ecs_region                   = data.aws_region.current.name,
     jenkins_url                  = "http://${aws_lb.this.dns_name}",
-    jenkins_master_agent_tunnel  = "${var.jenkins_master_identifier}.${var.application_name}:${var.jenkins_agent_port}",
+    jenkins_controller_agent_tunnel  = "${var.jenkins_controller_identifier}.${var.application_name}:${var.jenkins_agent_port}",
     ecs_execution_role_arn       = aws_iam_role.execution.arn,
     ecs_agent_task_role_arn      = aws_iam_role.agent.arn,
     jenkins_agent_image          = "${data.aws_caller_identity.this.account_id}.dkr.ecr.eu-central-1.amazonaws.com/${var.application_name}:jenkins-agent",
@@ -262,8 +262,8 @@ resource "aws_ecs_service" "this" {
 
   load_balancer {
     target_group_arn = aws_lb_target_group.this.arn
-    container_name   = var.jenkins_master_identifier
-    container_port   = var.jenkins_master_port
+    container_name   = var.jenkins_controller_identifier
+    container_port   = var.jenkins_controller_port
   }
 
   service_registries {
@@ -274,11 +274,11 @@ resource "aws_ecs_service" "this" {
 
 
 ################################################################################
-# ECS security group for Jenkins master
+# ECS security group for Jenkins controller
 ################################################################################
 
 resource "aws_security_group" "ecs_service" {
-  name   = "ecs-jenkins-master"
+  name   = "ecs-jenkins-controller"
   vpc_id = aws_vpc.this.id
 }
 
@@ -286,8 +286,8 @@ resource "aws_security_group_rule" "alb_ingress" {
   security_group_id = aws_security_group.ecs_service.id
 
   type                     = "ingress"
-  from_port                = var.jenkins_master_port
-  to_port                  = var.jenkins_master_port
+  from_port                = var.jenkins_controller_port
+  to_port                  = var.jenkins_controller_port
   protocol                 = "tcp"
   source_security_group_id = aws_security_group.alb.id
 }

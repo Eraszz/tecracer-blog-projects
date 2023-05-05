@@ -20,7 +20,7 @@ jenkins:
         name: ${ECS_CLUSTER_NAME}
         regionName: ${ECS_REGION}
         jenkinsUrl: ${JENKINS_URL}
-        tunnel: ${JENKINS_MASTER_AGENT_TUNNEL}
+        tunnel: ${JENKINS_CONTROLLER_AGENT_TUNNEL}
         templates:
           - assignPublicIp: false
             cpu: 1024

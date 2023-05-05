@@ -23,9 +23,9 @@ output "ecs_cloudwatch_log_group_name" {
   value       = aws_cloudwatch_log_group.this.name
 }
 
-output "jenkins_master_agent_tunnel_connection" {
+output "jenkins_controller_agent_tunnel_connection" {
   description = "Tunnel connection string"
-  value       = "jenkins-master.${var.application_name}:50000"
+  value       = "jenkins-controller.${var.application_name}:50000"
 }
 
 output "jenkins_url" {

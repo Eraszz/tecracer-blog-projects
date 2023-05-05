@@ -24,17 +24,17 @@ variable "application_name" {
   type        = string
 }
 
-variable "jenkins_master_identifier" {
-  description = "Name of the jenkins master"
+variable "jenkins_controller_identifier" {
+  description = "Name of the jenkins controller"
   type        = string
 }
 
 variable "jenkins_agent_port" {
-  description = "Port Jenkins agent uses to connect to master"
+  description = "Port Jenkins agent uses to connect to controller"
   type        = number
 }
 
-variable "jenkins_master_port" {
-  description = "Port used to connect to Jenkins master"
+variable "jenkins_controller_port" {
+  description = "Port used to connect to Jenkins controller"
   type        = number
 }
