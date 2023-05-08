@@ -23,4 +23,4 @@ private_subnets = {
 }
 
 application_name               = "cross-account-msk-data-streaming"
-allowed_service_principal_arns = ["arn:aws:iam::843934227598:root"]
+allowed_service_principal_arns = ["arn:aws:iam::XXXXXXXXXX:root"]
