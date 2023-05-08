@@ -36,7 +36,7 @@ def serializer(message):
 # Kafka Producer
 producer = KafkaProducer(
     security_protocol="SSL",
-    bootstrap_servers=[sys.argv[1]],
+    bootstrap_servers=list(sys.argv[1].split(',')),
     value_serializer=serializer
 )
 if __name__ == '__main__':

@@ -1,6 +1,12 @@
 # Serverless Jenkins on ECS: Use AWS Fargate and Terraform to build a containerized, Controller/Agent-based Jenkins deployment pipeline
 
-This is the repository for the official tecRacer three-part blog series [Serverless Jenkins on ECS: Use AWS Fargate and Terraform to build a containerized, Controller/Agent-based Jenkins deployment pipeline](https://www.tecracer.com/blog/2023/03/version-control-your-database-use-flyway-on-aws-to-automate-database-migrations-and-increase-deployment-reliability.html).
+This is the repository for the official tecRacer three-part blog series.
+
+Part 1: [Serverless Jenkins on ECS Part 1: Use AWS Fargate and Terraform to build a containerized, Controller/Agent-based Jenkins deployment pipeline](https://www.tecracer.com/blog/2023/05/serverless-jenkins-on-ecs-part-1-use-aws-fargate-and-terraform-to-build-a-containerized-controller/agent-based-jenkins-deployment-pipeline.html).
+
+Part 2: [Serverless Jenkins on ECS Part 2: Use AWS Fargate and Terraform to build a containerized, Controller/Agent-based Jenkins deployment pipeline](https://www.tecracer.com/blog/2023/05/serverless-jenkins-on-ecs-part-2-use-aws-fargate-and-terraform-to-build-a-containerized-controller/agent-based-jenkins-deployment-pipeline.html).
+
+Part 3: [Serverless Jenkins on ECS Part 3: Use AWS Fargate and Terraform to build a containerized, Controller/Agent-based Jenkins deployment pipeline](https://www.tecracer.com/blog/2023/05/serverless-jenkins-on-ecs-part-3-use-aws-fargate-and-terraform-to-build-a-containerized-controller/agent-based-jenkins-deployment-pipeline.html).
 
 # Architecture
 

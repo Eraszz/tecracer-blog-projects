@@ -19,8 +19,7 @@ locals {
 
   /*
   The broker_info_map contains the information needed for the VPC Endpoint Services.
-  As the values in data.aws_msk_broker_nodes.this.node_info_list cannot be determined until apply we CANNOT use this map as the input
-  for the module "vpc_endpoint_service".
+  As the values in data.aws_msk_broker_nodes.this.node_info_list cannot be determined until the Terraform configuration has been applied, we CANNOT use this map as the input for the module "vpc_endpoint_service".
 
   To be able to dynamically create out VPC Endpoint Services, we will create a second map 'endpoint_service_key_map' with an know
   number of map entries. The keys of the map will be equal to the key of the map 'broker_info_map' and will serve as the input
