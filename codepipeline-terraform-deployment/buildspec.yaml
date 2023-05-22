@@ -1,0 +1,55 @@
+version: 0.2
+
+phases:
+  build:
+    on-failure: ABORT
+    commands:
+      - cd ${CODEBUILD_SRC_DIR}
+      - |-
+        if [ ${ACTION} = "VALIDATE" ] ; then
+
+          echo "==== Running: Terraform Validate ===="
+          terraform init
+          terraform validate
+
+          echo "==== Running: TFLINT ===="
+          tflint --init
+          tflint
+
+          echo "==== Running: Checkov ===="
+          checkov --framework terraform -d .
+
+          echo "==== Running: TFSEC ===="
+          tfsec .
+
+        elif [ ${ACTION} = "PLAN" ] ; then
+
+          echo "==== Running: Terraform Plan ===="
+          terraform init
+          terraform plan -out=tfplan -input=false -no-color
+          terraform show -json tfplan > tfplan.json
+
+          echo "==== Running: OPA ===="
+          OPA_CHECK=$(opa exec --decision terraform/analysis/authz -b policy/ tfplan.json | jq -r ".result[] |.result")
+          echo "OPA Evaluation Check = $OPA_CHECK"
+          if ! $OPA_CHECK; then
+            printf '%s\n' "OPA evaluation failed" >&2
+            exit 1
+          fi
+
+        elif [ ${ACTION} = "APPLY" ] ; then
+
+          echo "==== Running: Terraform Apply ===="
+          terraform init
+          terraform apply -no-color -auto-approve tfplan
+          
+        elif [ ${ACTION} = "DESTROY" ] ; then
+
+          echo "==== Running: Terraform Destroy ===="
+          terraform init
+          terraform destroy -no-color -auto-approve
+        fi
+
+artifacts:
+  files:
+    - '**/*'
