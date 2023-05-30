@@ -1,0 +1,40 @@
+variable "vpc_cidr_block" {
+  description = "CIDR of vpc"
+  type        = string
+}
+
+variable "public_subnets" {
+  description = "Map of public subnets that should be created"
+  type = map(object({
+    cidr_block        = string
+    availability_zone = string
+  }))
+}
+
+variable "private_subnets" {
+  description = "Map of private subnets that should be created"
+  type = map(object({
+    cidr_block        = string
+    availability_zone = string
+  }))
+}
+
+variable "application_name" {
+  description = "Name of the application"
+  type        = string
+}
+
+variable "on_premises_public_encryption_domain" {
+   description = "IP used for the public encryption domain"
+  type        = string 
+}
+
+variable "aws_peer_ip" {
+   description = "IP used for the AWS VPN Peer"
+  type        = string 
+}
+
+variable "on_premises_peer_ip" {
+   description = "IP used for the On Premises VPN Peer"
+  type        = string 
+}
