@@ -18,6 +18,14 @@ resource "aws_instance" "client" {
     delete_on_termination = true
   }
 
+  user_data = <<EOF
+    #!/bin/bash
+
+    yum update -y
+    yum install -y php-curl
+  EOF
+
+
   tags = {"Name" = "Client"}
 
 }
