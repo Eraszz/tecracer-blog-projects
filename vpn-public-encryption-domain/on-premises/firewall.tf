@@ -8,7 +8,7 @@ resource "aws_instance" "firewall" {
   subnet_id              = local.public_subnet_ids[0]
   vpc_security_group_ids = [aws_security_group.wan_eni.id]
 
-  private_ip = "192.168.0.10"
+  private_ip = "172.16.0.10"
   source_dest_check = false
 
   root_block_device {
@@ -41,7 +41,7 @@ resource "aws_network_interface" "this" {
   security_groups   = [aws_security_group.lan_eni.id]
   source_dest_check = false
 
-  private_ips       = ["192.168.1.10"]
+  private_ips       = ["172.16.1.10"]
 }
 
 

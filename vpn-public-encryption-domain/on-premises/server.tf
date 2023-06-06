@@ -8,7 +8,7 @@ resource "aws_instance" "server" {
   subnet_id              = local.private_subnet_ids[0]
   vpc_security_group_ids = [aws_security_group.server.id]
 
-  private_ip = "192.168.1.100"
+  private_ip = "172.16.1.100"
 
   root_block_device {
     volume_size           = 50
