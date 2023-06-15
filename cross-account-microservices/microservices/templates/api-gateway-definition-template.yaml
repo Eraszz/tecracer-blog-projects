@@ -1,0 +1,123 @@
+---
+swagger: "2.0"
+info:
+  version: "1.0"
+  title: "${application_name}-${microservice_name}"
+schemes:
+- "https"
+paths:
+  /orders:
+    get:
+      produces:
+      - "application/json"
+      parameters:
+      - name: "orderDate"
+        in: "query"
+        required: false
+        type: "string"
+      responses:
+        "200":
+          description: "200 response"
+          schema:
+            $ref: "#/definitions/orders"
+      x-amazon-apigateway-request-validator: "Validate body, query string parameters,\
+        \ and headers"
+      x-amazon-apigateway-integration:
+        uri: "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/${get_orders_arn}/invocations"
+        httpMethod: "POST"
+        passthroughBehavior: "when_no_match"
+        timeoutInMillis: 29000
+        type: "aws_proxy"
+    post:
+      operationId: "placeOrder"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "newOrder"
+        required: true
+        schema:
+          $ref: "#/definitions/newOrder"
+      responses:
+        "200":
+          description: "200 response"
+          schema:
+            $ref: "#/definitions/newOrderResponse"
+      x-amazon-apigateway-request-validator: "Validate body, query string parameters,\
+        \ and headers"
+      x-amazon-apigateway-integration:
+        uri: "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/${post_order_arn}/invocations"
+        httpMethod: "POST"
+        passthroughBehavior: "when_no_match"
+        timeoutInMillis: 29000
+        type: "aws_proxy"
+  /orders/{orderId}:
+    get:
+      produces:
+      - "application/json"
+      parameters:
+      - name: "orderId"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "200 response"
+          schema:
+            $ref: "#/definitions/order"
+      x-amazon-apigateway-request-validator: "Validate body, query string parameters,\
+        \ and headers"
+      x-amazon-apigateway-integration:
+        uri: "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/${get_order_arn}/invocations"
+        httpMethod: "POST"
+        passthroughBehavior: "when_no_match"
+        timeoutInMillis: 29000
+        type: "aws_proxy"
+definitions:
+  newOrder:
+    type: "object"
+    properties:
+      ${microservice_name}:
+        $ref: "#/definitions/${microservice_name}"
+      fullName:
+        type: "string"
+    title: "new Order"
+  newOrderResponse:
+    type: "object"
+    properties:
+      order:
+        $ref: "#/definitions/order"
+      message:
+        type: "string"
+    title: "new Order Response"
+  orders:
+    type: "object"
+    properties:
+      orders:
+        type: "array"
+        items:
+          $ref: "#/definitions/order"
+    title: "Orders"
+  order:
+    type: "object"
+    properties:
+      orderId:
+        type: "string"
+      orderDate:
+        type: "string"
+        format: "date"
+      ${microservice_name}:
+        type: "string"
+      fullName:
+        type: "string"
+    title: "Order"
+  ${microservice_name}:
+    type: "string"
+    ${indent(4, order_options)}
+    
+x-amazon-apigateway-request-validators:
+  Validate body, query string parameters, and headers:
+    validateRequestParameters: true
+    validateRequestBody: true
