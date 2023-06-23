@@ -26,7 +26,7 @@ resource "aws_instance" "client" {
   EOF
 
 
-  tags = {"Name" = "Client"}
+  tags = { "Name" = "Client" }
 
 }
 

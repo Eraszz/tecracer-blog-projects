@@ -105,7 +105,7 @@ resource "aws_subnet" "private" {
 
 resource "aws_eip" "nat" {
   for_each = aws_subnet.private
-  domain           = "vpc"
+  domain   = "vpc"
 }
 
 

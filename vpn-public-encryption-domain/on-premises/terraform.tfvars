@@ -14,8 +14,8 @@ private_subnets = {
   }
 }
 
-application_name          = "onprem-site-vpn-public-encryption-domain"
+application_name = "onprem-site-vpn-public-encryption-domain"
 
 aws_public_encryption_domain_ip = "xxxxxxxxxx"
-aws_peer_ip = "xxxxxxxxxx"
-on_premises_peer_ip = "xxxxxxxxxx"
+aws_peer_ip                     = "xxxxxxxxxx"
+on_premises_peer_ip             = "xxxxxxxxxx"

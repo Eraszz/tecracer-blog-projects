@@ -15,5 +15,5 @@ variable "tf_state_storage_dynamodb_lock_name" {
 
 variable "aws_account_id" {
   description = "AWS Account ID to grant KMS access to via key policy"
-  type = string
+  type        = string
 }

@@ -17,7 +17,7 @@ resource "aws_instance" "server" {
     delete_on_termination = true
   }
 
-  tags = {"Name" = "Server"}
+  tags = { "Name" = "Server" }
 }
 
 
@@ -47,19 +47,19 @@ resource "aws_security_group" "server" {
 resource "aws_security_group_rule" "server_http_ingress" {
   security_group_id = aws_security_group.server.id
 
-  type        = "ingress"
-  from_port   = 80
-  to_port     = 80
-  protocol    = "tcp"
+  type                     = "ingress"
+  from_port                = 80
+  to_port                  = 80
+  protocol                 = "tcp"
   source_security_group_id = aws_security_group.lan_eni.id
 }
 
 resource "aws_security_group_rule" "server_icmp_ingress" {
   security_group_id = aws_security_group.server.id
 
-  type        = "ingress"
-  from_port   = -1
-  to_port     = -1
-  protocol    = "icmp"
+  type                     = "ingress"
+  from_port                = -1
+  to_port                  = -1
+  protocol                 = "icmp"
   source_security_group_id = aws_security_group.lan_eni.id
 }

@@ -107,8 +107,8 @@ data "aws_iam_policy_document" "bucket_policy" {
 ##################################################
 
 resource "aws_kms_key" "this" {
-  description = "KMS key for encrption of CloudTrail logs in CW and S3"
-  key_usage   = "ENCRYPT_DECRYPT"
+  description             = "KMS key for encrption of CloudTrail logs in CW and S3"
+  key_usage               = "ENCRYPT_DECRYPT"
   deletion_window_in_days = 30
   is_enabled              = true
   enable_key_rotation     = true
@@ -143,7 +143,7 @@ data "aws_iam_policy_document" "key_policy" {
 ##################################################
 
 resource "aws_dynamodb_table" "this" {
-  name           = var.tf_state_storage_dynamodb_lock_name
+  name         = var.tf_state_storage_dynamodb_lock_name
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "LockID"
 
@@ -153,5 +153,5 @@ resource "aws_dynamodb_table" "this" {
   }
   point_in_time_recovery {
     enabled = true
-  } 
   }
+}

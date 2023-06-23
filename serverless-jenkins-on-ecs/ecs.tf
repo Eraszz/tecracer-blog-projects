@@ -14,26 +14,26 @@ resource "aws_ecs_cluster" "this" {
 resource "aws_ecs_task_definition" "this" {
   family = var.application_name
   container_definitions = templatefile("${path.module}/container_definition.tftpl", {
-    container_name      = var.jenkins_controller_identifier,
-    container_image     = "${data.aws_caller_identity.this.account_id}.dkr.ecr.eu-central-1.amazonaws.com/${var.application_name}:jenkins-controller",
+    container_name          = var.jenkins_controller_identifier,
+    container_image         = "${data.aws_caller_identity.this.account_id}.dkr.ecr.eu-central-1.amazonaws.com/${var.application_name}:jenkins-controller",
     jenkins_controller_port = var.jenkins_controller_port
-    jenkins_agent_port  = var.jenkins_agent_port
-    source_volume       = "home",
-    awslogs_group       = aws_cloudwatch_log_group.this.name,
-    awslogs_region      = data.aws_region.current.name,
+    jenkins_agent_port      = var.jenkins_agent_port
+    source_volume           = "home",
+    awslogs_group           = aws_cloudwatch_log_group.this.name,
+    awslogs_region          = data.aws_region.current.name,
 
-    user_name                    = "admin",
-    user_password                = "admin",
-    ecs_cluster_arn              = aws_ecs_cluster.this.arn,
-    ecs_cluster_name             = aws_ecs_cluster.this.name,
-    ecs_region                   = data.aws_region.current.name,
-    jenkins_url                  = "http://${aws_lb.this.dns_name}",
-    jenkins_controller_agent_tunnel  = "${var.jenkins_controller_identifier}.${var.application_name}:${var.jenkins_agent_port}",
-    ecs_execution_role_arn       = aws_iam_role.execution.arn,
-    ecs_agent_task_role_arn      = aws_iam_role.agent.arn,
-    jenkins_agent_image          = "${data.aws_caller_identity.this.account_id}.dkr.ecr.eu-central-1.amazonaws.com/${var.application_name}:jenkins-agent",
-    jenkins_agent_security_group = aws_security_group.ecs_jenkins_agent.id,
-    jenkins_agent_subnet_ids     = join(",", local.private_subnet_ids),
+    user_name                       = "admin",
+    user_password                   = "admin",
+    ecs_cluster_arn                 = aws_ecs_cluster.this.arn,
+    ecs_cluster_name                = aws_ecs_cluster.this.name,
+    ecs_region                      = data.aws_region.current.name,
+    jenkins_url                     = "http://${aws_lb.this.dns_name}",
+    jenkins_controller_agent_tunnel = "${var.jenkins_controller_identifier}.${var.application_name}:${var.jenkins_agent_port}",
+    ecs_execution_role_arn          = aws_iam_role.execution.arn,
+    ecs_agent_task_role_arn         = aws_iam_role.agent.arn,
+    jenkins_agent_image             = "${data.aws_caller_identity.this.account_id}.dkr.ecr.eu-central-1.amazonaws.com/${var.application_name}:jenkins-agent",
+    jenkins_agent_security_group    = aws_security_group.ecs_jenkins_agent.id,
+    jenkins_agent_subnet_ids        = join(",", local.private_subnet_ids),
     }
   )
 

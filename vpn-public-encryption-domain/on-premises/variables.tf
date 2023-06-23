@@ -25,16 +25,16 @@ variable "application_name" {
 }
 
 variable "aws_public_encryption_domain_ip" {
-   description = "IP used for the public encryption domain"
-  type        = string 
+  description = "IP used for the public encryption domain"
+  type        = string
 }
 
 variable "aws_peer_ip" {
-   description = "IP used for the AWS VPN Peer"
-  type        = string 
+  description = "IP used for the AWS VPN Peer"
+  type        = string
 }
 
 variable "on_premises_peer_ip" {
-   description = "IP used for the On Premises VPN Peer"
-  type        = string 
+  description = "IP used for the On Premises VPN Peer"
+  type        = string
 }

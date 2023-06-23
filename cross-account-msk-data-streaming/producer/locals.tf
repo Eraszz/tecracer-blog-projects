@@ -10,12 +10,12 @@ locals {
   The bootstrap_brokers_tls string is split into a map in the format { b-X: PORT}.
   */
   broker_port_map = { for v in split(",", aws_msk_cluster.this.bootstrap_brokers_tls) : split(".", v)[0] => split(":", v)[1] }
-  
+
   /*
   As we are not using custom ports for the brokers, the port will always the same (9094). 
   Therefore, we can extract the port by using the first map element.
   */
-  broker_port     = distinct(values(local.broker_port_map))[0]
+  broker_port = distinct(values(local.broker_port_map))[0]
 
   /*
   The broker_info_map contains the information needed for the VPC Endpoint Services.

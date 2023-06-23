@@ -13,12 +13,12 @@ resource "aws_s3_bucket" "this" {
 
 resource "aws_instance" "instance_A" {
   instance_type = "t2.large"
-  ami = data.aws_ami.ubuntu.id
+  ami           = data.aws_ami.ubuntu.id
 }
 
 resource "aws_instance" "instance_B" {
   instance_type = "t2.large"
-  ami = data.aws_ami.ubuntu.id
+  ami           = data.aws_ami.ubuntu.id
 }
 
 data "aws_ami" "ubuntu" {
@@ -48,7 +48,7 @@ resource "aws_iam_role" "this" {
     Statement = [
       {
         Action = "sts:AssumeRole"
-        Effect  = "Allow"
+        Effect = "Allow"
         Sid    = ""
         Principal = {
           Service = "ec2.amazonaws.com"

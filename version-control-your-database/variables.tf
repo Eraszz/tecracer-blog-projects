@@ -1,14 +1,14 @@
 variable "master_password" {
   type        = string
   description = "Password for the RDS database"
-  sensitive = true
+  sensitive   = true
   default     = "supersecretpassword"
 }
 
 variable "master_username" {
   type        = string
   description = "Username for the RDS database"
-  sensitive = true
+  sensitive   = true
   default     = "admin"
 }
 

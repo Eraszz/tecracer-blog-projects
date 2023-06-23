@@ -8,7 +8,7 @@ resource "aws_instance" "network_controller" {
   subnet_id              = local.public_subnet_ids[0]
   vpc_security_group_ids = [aws_security_group.wan_eni.id]
 
-  private_ip = "172.16.0.10"
+  private_ip        = "172.16.0.10"
   source_dest_check = false
 
   root_block_device {
@@ -18,12 +18,12 @@ resource "aws_instance" "network_controller" {
     delete_on_termination = true
   }
 
-  tags = {"Name" = "VNS3"}
+  tags = { "Name" = "VNS3" }
 }
 
 resource "aws_eip_association" "this" {
   network_interface_id = aws_instance.network_controller.primary_network_interface_id
-  allocation_id = data.aws_eip.this.id
+  allocation_id        = data.aws_eip.this.id
 }
 
 data "aws_eip" "this" {
@@ -41,7 +41,7 @@ resource "aws_network_interface" "this" {
   security_groups   = [aws_security_group.lan_eni.id]
   source_dest_check = false
 
-  private_ips       = ["172.16.1.10"]
+  private_ips = ["172.16.1.10"]
 }
 
 

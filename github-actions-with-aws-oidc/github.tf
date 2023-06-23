@@ -4,16 +4,16 @@
 ################################################################################
 
 resource "github_repository" "this" {
-  name        = var.repository_name
+  name = var.repository_name
 
-  auto_init = true
-  visibility  = "private"
+  auto_init  = true
+  visibility = "private"
 }
 
 resource "github_actions_secret" "this" {
-  repository       = github_repository.this.name
-  secret_name      = "DEPLOYMENT_IAM_ROLE_ARN"
-  plaintext_value  = aws_iam_role.this.arn
+  repository      = github_repository.this.name
+  secret_name     = "DEPLOYMENT_IAM_ROLE_ARN"
+  plaintext_value = aws_iam_role.this.arn
 }
 
 resource "github_repository_file" "deployment_yml" {

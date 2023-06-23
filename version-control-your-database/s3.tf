@@ -32,14 +32,14 @@ resource "aws_s3_bucket_notification" "this" {
 ################################################################################
 
 resource "aws_ssm_parameter" "s3_mapping" {
-for_each = aws_s3_bucket.this
-  name = "/flyway/s3-mapping/${each.value.id}"
-  type = "StringList"
+  for_each = aws_s3_bucket.this
+  name     = "/flyway/s3-mapping/${each.value.id}"
+  type     = "StringList"
   value = jsonencode(
     {
       schema        = each.key
       flywayVersion = var.flyway_version
-      flywayConf  = var.flyway_conf
+      flywayConf    = var.flyway_conf
     }
   )
 }
