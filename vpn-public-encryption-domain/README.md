@@ -1,6 +1,6 @@
-# Site-to-Site VPN with Public Encryption Domain: Build IPSec VPN tunnels between AWS and your On-Premises data center using public IP’s as encryption domain.
+# Build a Site-to-Site IPSec VPN with Public Encryption Domain
 
-This is the repository for the official tecRacer blog post [Site-to-Site VPN with Public Encryption Domain: Build IPSec VPN tunnels between AWS and your On-Premises data center using public IP’s as encryption domain](https://www.tecracer.com/blog/2023/06/site-to-site-vpn-with-public-encryption-domain-build-ipsec-vpn-tunnels-between-aws-and-your-on-premises-data-center-using-public-ips-as-encryption-domain..html).
+This is the repository for the official tecRacer blog post [Build a Site-to-Site IPSec VPN with Public Encryption Domain](https://www.tecracer.com/blog/2023/06/build-a-site-to-site-ipsec-vpn-with-public-encryption-domain.html).
 
 # Architecture
 
@@ -33,7 +33,7 @@ Besides the `Elastic IPs (VPN Peer IP)`, we will also request additional `Elasti
 
 ### Setup
 
-As this example includes manual configuration steps, please follow the step-by-step instructions of the original [blog post](https://www.tecracer.com/blog/2023/06/site-to-site-vpn-with-public-encryption-domain-build-ipsec-vpn-tunnels-between-aws-and-your-on-premises-data-center-using-public-ips-as-encryption-domain..html).
+As this example includes manual configuration steps, please follow the step-by-step instructions of the original [blog post](https://www.tecracer.com/blog/2023/06/build-a-site-to-site-ipsec-vpn-with-public-encryption-domain.html).
 
 ### Result
 

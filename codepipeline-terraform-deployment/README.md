@@ -1,6 +1,6 @@
-# Terraform CI/CD Pipelines: Use AWS CodePipeline to build fully-managed deployment pipelines for Terraform.
+# Build Terraform CI/CD Pipelines using AWS CodePipeline
 
-This is the repository for the official tecRacer blog post [Terraform CI/CD Pipelines: Use AWS CodePipeline to build fully-managed deployment pipelines for Terraform]().
+This is the repository for the official tecRacer blog post [Build Terraform CI/CD Pipelines using AWS CodePipeline](https://www.tecracer.com/blog/2023/05/build-terraform-ci/cd-pipelines-using-aws-codepipeline.html).
 
 # Architecture
 

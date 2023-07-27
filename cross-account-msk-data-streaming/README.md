@@ -1,10 +1,10 @@
-# Cross Account Kafka Streaming: Use Amazon MSK and Terraform to build a real-time data analytics pipeline.
+# Cross Account Kafka Streaming
 
 This is the repository for the official tecRacer two-part blog series.
 
-Part 1: [Cross Account Kafka Streaming Part 1: Use Amazon MSK and Terraform to build a real-time data analytics pipeline.](https://www.tecracer.com/blog/2023/05/cross-account-kafka-streaming-part-1-use-amazon-msk-and-terraform-to-build-a-real-time-data-analytics-pipeline..html).
+Part 1: [Cross Account Kafka Streaming: Part 1](https://www.tecracer.com/blog/2023/05/cross-account-kafka-streaming-part-1.html).
 
-Part 2: [Cross Account Kafka Streaming Part 2: Use Amazon MSK and Terraform to build a real-time data analytics pipeline.](https://www.tecracer.com/blog/2023/05/cross-account-kafka-streaming-part-2-use-amazon-msk-and-terraform-to-build-a-real-time-data-analytics-pipeline..html).
+Part 2: [Cross Account Kafka Streaming: Part 2](https://www.tecracer.com/blog/2023/05/cross-account-kafka-streaming-part-2.html).
 
 # Architecture
 

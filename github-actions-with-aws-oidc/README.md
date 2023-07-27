@@ -1,6 +1,6 @@
-# Secretless Terraform Deployment: Use GitHub Actions and AWS OpenID Connect identity providers to build a secretless IaC deployment pipeline
+# Secretless Terraform Deployments
 
-This is the repository for the official tecRacer blog post [Secretless Terraform Deployment: Use GitHub Actions and AWS OpenID Connect identity providers to build a secretless IaC deployment pipeline]().
+This is the repository for the official tecRacer blog post [Secretless Terraform Deployments](https://www.tecracer.com/blog/2023/03/secretless-terraform-deployments.html).
 
 ## Workflow
 

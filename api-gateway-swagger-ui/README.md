@@ -1,6 +1,6 @@
-# Serverless Swagger UI: Generate interactive documentation for your AWS API Gateway
+# Serverless Swagger UI for AWS API Gateway
 
-This is the repository for the official tecRacer blog post [Serverless Swagger UI: Generate interactive documentation for your AWS API Gateway](https://www.tecracer.com/blog/2023/03/serverless-swagger-ui-generate-interactive-documentation-for-your-aws-api-gateway.html).
+This is the repository for the official tecRacer blog post [Serverless Swagger UI for AWS API Gateway](https://www.tecracer.com/blog/2023/03/serverless-swagger-ui-for-aws-api-gateway.html).
 
 ## Architecture
 
