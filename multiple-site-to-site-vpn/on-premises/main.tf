@@ -1,7 +1,7 @@
 module "on_premises_network" {
   for_each = var.on_premises_networks
 
-  source = "../modules/on-premises"
+  source = "../modules/on-prem-bootstrap"
 
   application_name                = each.key
   vpc_cidr_block                  = each.value.vpc_cidr_block
