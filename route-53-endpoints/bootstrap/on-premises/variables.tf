@@ -17,6 +17,7 @@ variable "aws_network" {
   description = "Object of AWS network"
   type = object({
     peer_ips    = list(string)
+    preshared_keys = list(string)
     cidr_range  = string
     domain_name = string
   })

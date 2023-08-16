@@ -24,4 +24,6 @@ locals {
 
   dns_server_ip = cidrhost(local.private_subnet_cidrs[0], 10)
   server_ip     = cidrhost(local.private_subnet_cidrs[0], 20)
+  vpn_wan_ip    = cidrhost(local.public_subnet_cidrs[0], 30)
+  vpn_lan_ip    = cidrhost(local.private_subnet_cidrs[0], 30)
 }

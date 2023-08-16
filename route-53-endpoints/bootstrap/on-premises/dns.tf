@@ -11,11 +11,11 @@ resource "aws_instance" "dns" {
 
   private_ip = local.dns_server_ip
 
-  user_data = templatefile("${path.module}/src/user_data.sh", {
+  user_data = templatefile("${path.module}/src/dns_user_data.sh", {
     on_premises_cidr    = var.vpc_cidr_block
     dns_server_ip       = local.dns_server_ip
     server_ip           = local.server_ip
-    amazon_provided_dns = replace(var.vpc_cidr_block, "0/16", "2")
+    amazon_provided_dns = cidrhost(var.vpc_cidr_block, 2)
     local_domain_name   = "${var.application_name}.com"
 
     aws_site_cidr        = var.aws_network.cidr_range

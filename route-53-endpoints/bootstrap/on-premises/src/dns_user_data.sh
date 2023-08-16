@@ -99,7 +99,7 @@ sudo tee -a /var/named/${local_domain_name}.db <<EOF
 \$TTL 86400
 @   IN  SOA     ns1.${local_domain_name}. root.${local_domain_name}. (
                                               3           ;Serial
-                                              3600        ;Refresh
+                                              60          ;Refresh
                                               1800        ;Retry
                                               604800      ;Expire
                                               86400       ;Minimum TTL
@@ -120,7 +120,7 @@ sudo tee -a /var/named/${local_domain_name}.rev <<EOF
 \$TTL 86400
 @   IN  SOA     ns1.${local_domain_name}. root.${local_domain_name}. (
                                        3           ;Serial
-                                       3600        ;Refresh
+                                       60          ;Refresh
                                        1800        ;Retry
                                        604800      ;Expire
                                        86400       ;Minimum TTL
