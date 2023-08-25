@@ -61,7 +61,7 @@ data "aws_ami" "pf_sense" {
 
   filter {
     name   = "name"
-    values = ["pfSense-plus-ec2-23.01*"]
+    values = ["pfSense-plus-ec2-23.05*"]
   }
   owners = ["679593333241"]
 }
