@@ -47,6 +47,7 @@ resource "aws_codepipeline" "this" {
       version          = "1"
       run_order        = 2
       input_artifacts  = ["SOURCE_ARTIFACT"]
+      namespace        = "packerBuild"
       configuration = {
         ProjectName = aws_codebuild_project.build.name
         EnvironmentVariables = jsonencode([
@@ -102,6 +103,11 @@ resource "aws_codepipeline" "this" {
           {
             name  = "TERRAFORM_VERSION"
             value = "1.5.4"
+            type  = "PLAINTEXT"
+          },
+          {
+            name  = "AMI_ID"
+            value = "#{packerBuild.AMI_ID}"
             type  = "PLAINTEXT"
           }
         ])

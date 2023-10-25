@@ -15,5 +15,5 @@ phases:
       - |-
         echo "==== Running: Terraform Apply ===="
         terraform init
-        terraform apply -var ami_id=${CODEBUILD_AMI_ID} -no-color -auto-approve
+        terraform apply -var ami_id=${AMI_ID} -no-color -auto-approve
 
