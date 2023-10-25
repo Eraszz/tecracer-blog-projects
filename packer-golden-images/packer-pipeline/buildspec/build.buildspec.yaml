@@ -1,0 +1,35 @@
+version: 0.2
+
+env:
+  exported-variables:
+    - AMI_ID
+
+phases:
+  install:
+    on-failure: ABORT
+    commands:
+      - sudo apt update -y
+      - sudo apt install software-properties-common -y
+      - sudo add-apt-repository --yes --update ppa:ansible/ansible
+      - sudo apt install ansible -y
+      - wget -q https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip
+      - unzip packer_${PACKER_VERSION}_linux_amd64.zip -d /usr/local/bin
+      - packer --version
+  build:
+    on-failure: ABORT
+    commands:
+      - cd ${CODEBUILD_SRC_DIR}/packer
+      - |-
+        echo "==== Running: Packer Init ===="
+        packer init .
+
+        echo "==== Running: Packer Validate ===="
+        packer validate -var-file=${VARFILE_NAME} .
+
+        echo "==== Running: Packer Build ===="
+        packer build -var-file=${VARFILE_NAME} .
+
+        echo "==== Running: Get AMI ID ===="
+        AMI_ID=$(jq -r '.builds[-1].artifact_id' ${MANIFEST_NAME} | cut -d ":" -f2)
+        echo $AMI_ID
+
