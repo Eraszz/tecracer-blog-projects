@@ -16,6 +16,14 @@ resource "aws_instance" "this" {
     delete_on_termination = true
   }
 
+metadata_options {
+  http_endpoint = "enabled"
+  http_tokens = "required"
+}
+
+  tags = {
+    inspect = true
+  }
 }
 
 
@@ -49,7 +57,6 @@ resource "aws_iam_role_policy_attachment" "this" {
   role       = aws_iam_role.this.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
-
 
 ################################################################################
 # Client Security Group
