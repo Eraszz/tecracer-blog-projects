@@ -1,3 +1,4 @@
+/*
 resource "aws_ssm_association" "this" {
   name = "AmazonInspector-ManageAWSAgent"
 
@@ -10,6 +11,5 @@ resource "aws_ssm_association" "this" {
     values = ["true"]
   }
 }
-
-
+*/
 
