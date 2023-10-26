@@ -24,6 +24,7 @@ source "amazon-ebs" "this" {
       name = var.source_ami_name
     }
     most_recent = true
+    owners      = [var.source_ami_owner]
   }
   ssh_username = var.packer_image_ssh_username
 }
@@ -32,14 +33,6 @@ build {
   sources = [
     "source.amazon-ebs.this"
   ]
-
-  provisioner "shell" {
-    inline = [
-      "sudo dnf update",
-      "sudo dnf install python3-pip",
-      "pip install ansible"
-    ]
-  }
 
   provisioner "ansible" {
     user = var.packer_image_ssh_username
