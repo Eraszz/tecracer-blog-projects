@@ -8,10 +8,10 @@ resource "aws_codebuild_project" "build" {
   concurrent_build_limit = 1
 
   environment {
-    type                        = "LINUX_CONTAINER"
-    image                       = "aws/codebuild/standard:7.0"
-    compute_type                = "BUILD_GENERAL1_SMALL"
-    privileged_mode             = false
+    type            = "LINUX_CONTAINER"
+    image           = "aws/codebuild/standard:7.0"
+    compute_type    = "BUILD_GENERAL1_SMALL"
+    privileged_mode = false
   }
 
   artifacts {
@@ -42,10 +42,10 @@ resource "aws_codebuild_project" "deploy" {
   concurrent_build_limit = 1
 
   environment {
-    type                        = "LINUX_CONTAINER"
-    image                       = "aws/codebuild/standard:7.0"
-    compute_type                = "BUILD_GENERAL1_SMALL"
-    privileged_mode             = false
+    type            = "LINUX_CONTAINER"
+    image           = "aws/codebuild/standard:7.0"
+    compute_type    = "BUILD_GENERAL1_SMALL"
+    privileged_mode = false
   }
 
   artifacts {

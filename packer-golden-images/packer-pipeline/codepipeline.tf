@@ -40,14 +40,14 @@ resource "aws_codepipeline" "this" {
   stage {
     name = "BuildImage"
     action {
-      name             = "Build"
-      category         = "Build"
-      owner            = "AWS"
-      provider         = "CodeBuild"
-      version          = "1"
-      run_order        = 2
-      input_artifacts  = ["SOURCE_ARTIFACT"]
-      namespace        = "packerBuild"
+      name            = "Build"
+      category        = "Build"
+      owner           = "AWS"
+      provider        = "CodeBuild"
+      version         = "1"
+      run_order       = 2
+      input_artifacts = ["SOURCE_ARTIFACT"]
+      namespace       = "packerBuild"
       configuration = {
         ProjectName = aws_codebuild_project.build.name
         EnvironmentVariables = jsonencode([
@@ -66,7 +66,7 @@ resource "aws_codepipeline" "this" {
             value = "packer-manifest.json"
             type  = "PLAINTEXT"
           }
-          
+
         ])
       }
     }
@@ -87,16 +87,16 @@ resource "aws_codepipeline" "this" {
     }
   }
 
-    stage {
+  stage {
     name = "DeployImage"
     action {
-      name             = "Deploy"
-      category         = "Build"
-      owner            = "AWS"
-      provider         = "CodeBuild"
-      version          = "1"
-      run_order        = 4
-      input_artifacts  = ["SOURCE_ARTIFACT"]
+      name            = "Deploy"
+      category        = "Build"
+      owner           = "AWS"
+      provider        = "CodeBuild"
+      version         = "1"
+      run_order       = 4
+      input_artifacts = ["SOURCE_ARTIFACT"]
       configuration = {
         ProjectName = aws_codebuild_project.deploy.name
         EnvironmentVariables = jsonencode([
@@ -174,7 +174,7 @@ data "aws_iam_policy_document" "codepipeline" {
     ]
     resources = [
       aws_codebuild_project.build.arn,
-      aws_codebuild_project.deploy.arn]
+    aws_codebuild_project.deploy.arn]
   }
 
   statement {
