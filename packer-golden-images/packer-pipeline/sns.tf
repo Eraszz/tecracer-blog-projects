@@ -25,7 +25,7 @@ data "aws_iam_policy_document" "sns" {
     ]
     principals {
       type        = "Service"
-      identifiers = ["codepipeline.amazonaws.com"]
+      identifiers = ["codepipeline.amazonaws.com", "inspector.amazonaws.com"]
     }
     resources = [
       aws_sns_topic.this.arn
@@ -33,7 +33,7 @@ data "aws_iam_policy_document" "sns" {
     condition {
       test     = "ArnEquals"
       variable = "aws:SourceArn"
-      values   = [aws_codepipeline.this.arn]
+      values   = [aws_codepipeline.this.arn, "arn:aws:inspector:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"]
     }
   }
 }

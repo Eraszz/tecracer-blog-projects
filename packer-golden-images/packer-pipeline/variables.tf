@@ -8,7 +8,7 @@ variable "sns_endpoint" {
   type        = string
 }
 
-variable "aws_kms_alias" {
+variable "tf_state_aws_kms_alias" {
   description = "Alias of the KMS key used for the state storage."
   type        = string
 }

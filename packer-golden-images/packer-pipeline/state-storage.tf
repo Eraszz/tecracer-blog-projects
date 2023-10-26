@@ -116,7 +116,7 @@ resource "aws_kms_key" "state_storage" {
 }
 
 resource "aws_kms_alias" "state_storage" {
-  name          = format("alias/%s", var.aws_kms_alias)
+  name          = format("alias/%s", var.tf_state_aws_kms_alias)
   target_key_id = aws_kms_key.state_storage.key_id
 }
 
