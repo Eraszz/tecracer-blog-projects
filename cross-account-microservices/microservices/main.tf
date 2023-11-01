@@ -11,4 +11,5 @@ module "microservice" {
   microservice_name               = each.key
   microservice_order_options      = each.value
   domain_name                     = format("%s.%s.com", each.key, var.application_name)
+  secretsmanager_secret_arn = var.secretsmanager_secret_arn
 }

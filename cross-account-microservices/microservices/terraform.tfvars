@@ -17,3 +17,5 @@ microservices = {
   beverage = ["tea", "coffee", "water"],
   food     = ["pizza", "hamburger", "salat"]
 }
+
+secretsmanager_secret_arn = "xxxxxxxxxxxx"

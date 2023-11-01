@@ -20,3 +20,8 @@ variable "microservices" {
   description = "List of microservices to create."
   type        = map(list(string))
 }
+
+variable "secretsmanager_secret_arn" {
+  description = "ARN of the secretsmanager secret that stores the API Gateway VPC Endpoint ID."
+  type        = string
+}

@@ -19,7 +19,7 @@ data "aws_ec2_managed_prefix_list" "this" {
 ################################################################################
 
 data "aws_secretsmanager_secret" "this" {
-  name = var.application_name
+  arn = var.secretsmanager_secret_arn
 }
 
 data "aws_secretsmanager_secret_version" "this" {

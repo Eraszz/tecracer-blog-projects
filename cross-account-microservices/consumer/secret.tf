@@ -4,6 +4,7 @@
 
 resource "aws_secretsmanager_secret" "this" {
   name = var.application_name
+  kms_key_id = aws_kms_key.this.id
 }
 
 resource "aws_secretsmanager_secret_version" "this" {
@@ -30,7 +31,11 @@ data "aws_iam_policy_document" "secret" {
       identifiers = var.allowed_service_principal_arns
     }
 
-    actions   = ["secretsmanager:GetSecretValue"]
+    actions = [
+      "secretsmanager:GetSecretValue",
+      "secretsmanager:DescribeSecret",
+      "secretsmanager:GetResourcePolicy"
+    ]
     resources = [aws_secretsmanager_secret.this.arn]
   }
 }

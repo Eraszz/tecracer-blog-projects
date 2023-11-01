@@ -24,4 +24,4 @@ private_subnets = {
 
 application_name               = "cross-account-microservices"
 microservices                  = ["food", "beverage"]
-allowed_service_principal_arns = ["arn:aws:iam::xxxxxxxxxxx:root"]
+allowed_service_principal_arns = ["arn:aws:iam::xxxxxxxxxxxx:root"]

@@ -35,3 +35,8 @@ variable "api_gateway_definition_template" {
   description = "YAML file describing the API Gateway definition."
   type        = string
 }
+
+variable "secretsmanager_secret_arn" {
+  description = "ARN of the secretsmanager secret that stores the API Gateway VPC Endpoint ID."
+  type        = string
+}
