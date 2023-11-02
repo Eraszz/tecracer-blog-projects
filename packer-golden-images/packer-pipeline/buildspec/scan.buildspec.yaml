@@ -11,9 +11,9 @@ phases:
   build:
     on-failure: ABORT
     commands:
-      - cd ${CODEBUILD_SRC_DIR}/terraform
+      - cd ${CODEBUILD_SRC_DIR}/terraform/scan
       - |-
-        echo "==== Running: Terraform Apply ===="
+        echo "==== Deploy Scan Infrastructure ===="
         terraform init
         terraform apply -var ami_id=${AMI_ID} -no-color -auto-approve
 

@@ -1,4 +1,4 @@
-application_name                    = "codepipeline-packer-build"
+application_name                    = "packer-ami-build-pipeline"
 sns_endpoint                        = "hhagen@tecracer.de"
 tf_state_aws_kms_alias              = "terraform-state-storage"
 tf_state_storage_bucket_name        = "terraform-state-storage"

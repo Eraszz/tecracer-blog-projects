@@ -73,6 +73,35 @@ resource "aws_codepipeline" "this" {
   }
 
   stage {
+    name = "ScanImage"
+    action {
+      name            = "Scan"
+      category        = "Build"
+      owner           = "AWS"
+      provider        = "CodeBuild"
+      version         = "1"
+      run_order       = 3
+      input_artifacts = ["SOURCE_ARTIFACT"]
+      configuration = {
+        ProjectName = aws_codebuild_project.scan.name
+        EnvironmentVariables = jsonencode([
+          {
+            name  = "TERRAFORM_VERSION"
+            value = "1.5.4"
+            type  = "PLAINTEXT"
+          },
+          {
+            name  = "AMI_ID"
+            value = "#{packerBuild.AMI_ID}"
+            type  = "PLAINTEXT"
+          }
+        ])
+      }
+    }
+  }
+
+
+  stage {
     name = "Approve"
     action {
       name      = "Approve"
@@ -80,25 +109,26 @@ resource "aws_codepipeline" "this" {
       owner     = "AWS"
       provider  = "Manual"
       version   = "1"
-      run_order = 3
+      run_order = 4
       configuration = {
         NotificationArn = aws_sns_topic.this.arn
       }
     }
   }
 
+
   stage {
-    name = "DeployImage"
+    name = "ShareImage"
     action {
-      name            = "Deploy"
+      name            = "Share"
       category        = "Build"
       owner           = "AWS"
       provider        = "CodeBuild"
       version         = "1"
-      run_order       = 4
+      run_order       = 5
       input_artifacts = ["SOURCE_ARTIFACT"]
       configuration = {
-        ProjectName = aws_codebuild_project.deploy.name
+        ProjectName = aws_codebuild_project.share.name
         EnvironmentVariables = jsonencode([
           {
             name  = "TERRAFORM_VERSION"
@@ -174,7 +204,9 @@ data "aws_iam_policy_document" "codepipeline" {
     ]
     resources = [
       aws_codebuild_project.build.arn,
-    aws_codebuild_project.deploy.arn]
+      aws_codebuild_project.scan.arn,
+      aws_codebuild_project.share.arn
+      ]
   }
 
   statement {

@@ -1,0 +1,25 @@
+version: 0.2
+
+phases:
+  install:
+    on-failure: ABORT
+    commands:
+      - sudo apt update -y
+      - curl -sS -O https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+      - unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /usr/local/bin
+      - terraform --version
+  build:
+    on-failure: ABORT
+    commands:
+      - cd ${CODEBUILD_SRC_DIR}/terraform/scan
+      - |-
+        echo "==== Destroy Scan Infrastructure ===="
+        terraform init
+        terraform destroy -var ami_id=${AMI_ID} -no-color -auto-approve
+      - cd ${CODEBUILD_SRC_DIR}/terraform/share
+      - |-
+        echo "==== Share AMI ===="
+        terraform init
+        terraform apply -var ami_id=${AMI_ID} -no-color -auto-approve
+
+
