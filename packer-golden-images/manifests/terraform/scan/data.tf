@@ -16,3 +16,12 @@ data "aws_subnets" "default" {
     values = [data.aws_vpc.default.id]
   }
 }
+
+
+################################################################################
+# Get ARN of SNS topic
+################################################################################
+
+data "aws_sns_topic" "this" {
+  name = var.sns_topic_name
+}

@@ -67,6 +67,7 @@ resource "aws_security_group" "this" {
   vpc_id = data.aws_vpc.default.id
 }
 
+/*
 resource "aws_security_group_rule" "egress" {
   security_group_id = aws_security_group.this.id
 
@@ -86,5 +87,5 @@ resource "aws_security_group_rule" "ingress" {
   protocol    = -1
   cidr_blocks = ["0.0.0.0/0"]
 }
-
+*/
 
