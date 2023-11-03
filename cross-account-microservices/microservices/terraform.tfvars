@@ -18,4 +18,4 @@ microservices = {
   food     = ["pizza", "hamburger", "salat"]
 }
 
-secretsmanager_secret_arn = "xxxxxxxxxxxx"
+secretsmanager_secret_arn = "xxxxxxxxxxx"
