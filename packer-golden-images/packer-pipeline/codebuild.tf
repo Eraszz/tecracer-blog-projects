@@ -116,7 +116,7 @@ resource "aws_cloudwatch_log_group" "this" {
 ################################################################################
 
 resource "aws_iam_role" "codebuild" {
-  name = "${var.application_name}-codebuild"
+  name = format("%s-%s", var.application_name, "codebuild")
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"

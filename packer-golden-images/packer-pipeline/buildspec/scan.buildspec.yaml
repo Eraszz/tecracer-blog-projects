@@ -1,19 +1,8 @@
 version: 0.2
 
 phases:
-  install:
-    on-failure: ABORT
-    commands:
-      - sudo apt update -y
-      - curl -sS -O https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
-      - unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /usr/local/bin
-      - terraform --version
   build:
     on-failure: ABORT
     commands:
-      - cd ${CODEBUILD_SRC_DIR}/terraform/scan
-      - |-
-        echo "==== Deploy Scan Infrastructure ===="
-        terraform init
-        terraform apply -var ami_id=${AMI_ID} -no-color -auto-approve
+      - aws stepfunctions start-execution --state-machine-arn ${SFN_ARN}  --input "{\"AmiId\" : \"${AMI_ID}\"}" 
 

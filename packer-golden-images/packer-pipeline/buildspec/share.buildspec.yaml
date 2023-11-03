@@ -11,12 +11,7 @@ phases:
   build:
     on-failure: ABORT
     commands:
-      - cd ${CODEBUILD_SRC_DIR}/terraform/scan
-      - |-
-        echo "==== Destroy Scan Infrastructure ===="
-        terraform init
-        terraform destroy -var ami_id=${AMI_ID} -no-color -auto-approve
-      - cd ${CODEBUILD_SRC_DIR}/terraform/share
+      - cd ${CODEBUILD_SRC_DIR}/terraform
       - |-
         echo "==== Share AMI ===="
         terraform init

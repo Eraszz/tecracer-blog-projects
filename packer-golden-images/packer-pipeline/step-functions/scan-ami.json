@@ -1,0 +1,125 @@
+{
+    "Comment": "A description of my state machine",
+    "StartAt": "RunInstances",
+    "States": {
+        "RunInstances": {
+            "Type": "Task",
+            "Parameters": {
+                "MaxCount": 1,
+                "MinCount": 1,
+                "ImageId.$": "$.AmiId",
+                "InstanceType": "${instance_type}",
+                "SubnetId": "${subnet_id}",
+                "SecurityGroupIds": [
+                    "${security_group_id}"
+                ],
+                "IamInstanceProfile": {
+                    "Name": "${iam_instance_profile_name}"
+                }
+            },
+            "Resource": "arn:aws:states:::aws-sdk:ec2:runInstances",
+            "Next": "Parallel",
+            "ResultSelector": {
+                "Id.$": "$.Instances[0].InstanceId"
+            },
+            "ResultPath": "$.LaunchedInstance"
+        },
+        "Parallel": {
+            "Type": "Parallel",
+            "Next": "Success",
+            "Branches": [
+                {
+                    "StartAt": "SNS Publish",
+                    "States": {
+                        "SNS Publish": {
+                            "Type": "Task",
+                            "Resource": "arn:aws:states:::sns:publish",
+                            "Parameters": {
+                                "TopicArn": "${sns_topic_arn}",
+                                "Message": {
+                                    "AWS InspectorV2 scan status": "STARTED",
+                                    "AMI ID.$": "$.AmiId",
+                                    "Instance ID.$": "$.LaunchedInstance.Id"
+                                }
+                            },
+                            "End": true
+                        }
+                    }
+                },
+                {
+                    "StartAt": "Prepare Evenbridge Pattern for 'Scan'",
+                    "States": {
+                        "Prepare Evenbridge Pattern for 'Scan'": {
+                            "Type": "Pass",
+                            "Parameters": {
+                                "unescapedJson": {
+                                    "detail": {
+                                        "scan-status": [
+                                            "INITIAL_SCAN_COMPLETE"
+                                        ]
+                                    },
+                                    "detail-type": [
+                                        "Inspector2 Scan"
+                                    ],
+                                    "resources.$": "States.Array($.LaunchedInstance.Id)",
+                                    "source": [
+                                        "aws.inspector2"
+                                    ]
+                                }
+                            },
+                            "ResultPath": "$.ScanAmi",
+                            "Next": "Scan"
+                        },
+                        "Scan": {
+                            "Type": "Task",
+                            "Parameters": {
+                                "Description": "AWS Inspector scan successful",
+                                "EventBusName": "default",
+                                "EventPattern.$": "States.JsonToString($.ScanAmi.unescapedJson)",
+                                "Name": "${eventbridge_rule_name}",
+                                "State": "ENABLED"
+                            },
+                            "Resource": "arn:aws:states:::aws-sdk:eventbridge:putRule",
+                            "ResultPath": "$.EventBridgeRule",
+                            "Next": "Prepare Event for Second StateMachine Workflow"
+                        },
+                        "Prepare Event for Second StateMachine Workflow": {
+                            "Type": "Pass",
+                            "Parameters": {
+                                "unescapedJson": {
+                                    "AmiId.$": "$.AmiId",
+                                    "instanceId.$": "$.LaunchedInstance.Id"
+                                }
+                            },
+                            "ResultPath": "$.ScanAmi",
+                            "Next": "ScanTarget"
+                        },
+                        "ScanTarget": {
+                            "Type": "Task",
+                            "Parameters": {
+                                "Rule": "${eventbridge_rule_name}",
+                                "Targets": [
+                                    {
+                                        "Arn": "${sns_topic_arn}",
+                                        "Id": "SendScanSuccededNotification"
+                                    },
+                                    {
+                                        "Arn": "${step_function_part_2}",
+                                        "Id": "SendScanMessage",
+                                        "Input.$": "States.JsonToString($.ScanAmi.unescapedJson)",
+                                        "RoleArn": "${eventbrdige_role_arn}"
+                                    }
+                                ]
+                            },
+                            "Resource": "arn:aws:states:::aws-sdk:eventbridge:putTargets",
+                            "End": true
+                        }
+                    }
+                }
+            ]
+        },
+        "Success": {
+            "Type": "Succeed"
+        }
+    }
+}

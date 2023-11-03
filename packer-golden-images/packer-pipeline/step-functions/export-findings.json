@@ -1,0 +1,111 @@
+{
+  "Comment": "A description of my state machine",
+  "StartAt": "Parallel",
+  "States": {
+    "Parallel": {
+      "Type": "Parallel",
+      "Branches": [
+        {
+          "StartAt": "Lambda Invoke",
+          "States": {
+            "Lambda Invoke": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "OutputPath": "$.Payload",
+              "Parameters": {
+                "Payload": {
+                  "instanceId.$": "$.instanceId"
+                },
+                "FunctionName": "${lambda_function_name}"
+              },
+              "Retry": [
+                {
+                  "ErrorEquals": [
+                    "Lambda.ServiceException",
+                    "Lambda.AWSLambdaException",
+                    "Lambda.SdkClientException",
+                    "Lambda.TooManyRequestsException"
+                  ],
+                  "IntervalSeconds": 1,
+                  "MaxAttempts": 3,
+                  "BackoffRate": 2
+                }
+              ],
+              "End": true
+            }
+          }
+        },
+        {
+          "StartAt": "TerminateInstances",
+          "States": {
+            "TerminateInstances": {
+              "Type": "Task",
+              "End": true,
+              "Parameters": {
+                "InstanceIds.$": "States.Array($.instanceId)"
+              },
+              "Resource": "arn:aws:states:::aws-sdk:ec2:terminateInstances"
+            }
+          }
+        },
+        {
+          "StartAt": "CreateTags",
+          "States": {
+            "CreateTags": {
+              "Type": "Task",
+              "End": true,
+              "Parameters": {
+                "Resources.$": "States.Array($.AmiId)",
+                "Tags": [
+                  {
+                    "Key": "InspectorV2Status",
+                    "Value": "scanComplete"
+                  }
+                ]
+              },
+              "Resource": "arn:aws:states:::aws-sdk:ec2:createTags"
+            }
+          }
+        }
+      ],
+      "Next": "SNS Publish",
+      "ResultPath": null
+    },
+    "SNS Publish": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "${sns_topic_arn}",
+        "Message": {
+          "AWS InspectorV2 scan status": "COMPLETED",
+          "AMI ID.$": "$.AmiId",
+          "Instance ID.$": "$.instanceId"
+        }
+      },
+      "Next": "RemoveTargets"
+    },
+    "RemoveTargets": {
+      "Type": "Task",
+      "Next": "DeleteRule",
+      "Parameters": {
+        "Ids": [
+          "SendScanSuccededNotification",
+          "SendScanMessage"
+        ],
+        "Rule": "${eventbridge_rule_name}"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:eventbridge:removeTargets"
+    },
+    "DeleteRule": {
+      "Type": "Task",
+      "Parameters": {
+        "Name": "${eventbridge_rule_name}"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:eventbridge:deleteRule",
+      "Next": "Success"
+    },
+    "Success": {
+      "Type": "Succeed"
+    }
+  }
+}

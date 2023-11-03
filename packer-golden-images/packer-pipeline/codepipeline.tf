@@ -9,7 +9,7 @@ resource "aws_codepipeline" "this" {
 
   artifact_store {
 
-    location = aws_s3_bucket.this.id
+    location = aws_s3_bucket.codepipeline.id
     type     = "S3"
 
     encryption_key {
@@ -94,6 +94,11 @@ resource "aws_codepipeline" "this" {
             name  = "AMI_ID"
             value = "#{packerBuild.AMI_ID}"
             type  = "PLAINTEXT"
+          },
+          {
+            name  = "SFN_ARN"
+            value = aws_sfn_state_machine.scan_ami.arn
+            type  = "PLAINTEXT"
           }
         ])
       }
@@ -152,7 +157,7 @@ resource "aws_codepipeline" "this" {
 ################################################################################
 
 resource "aws_iam_role" "codepipeline" {
-  name = "${var.application_name}-codepipeline"
+  name = format("%s-%s", var.application_name, "codepipeline")
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -180,7 +185,7 @@ data "aws_iam_policy_document" "codepipeline" {
       "s3:ListBucket",
     ]
 
-    resources = [aws_s3_bucket.this.arn, "${aws_s3_bucket.this.arn}/*"]
+    resources = [aws_s3_bucket.codepipeline.arn, "${aws_s3_bucket.codepipeline.arn}/*"]
   }
 
   statement {
@@ -206,7 +211,7 @@ data "aws_iam_policy_document" "codepipeline" {
       aws_codebuild_project.build.arn,
       aws_codebuild_project.scan.arn,
       aws_codebuild_project.share.arn
-      ]
+    ]
   }
 
   statement {
