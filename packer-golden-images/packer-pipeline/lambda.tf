@@ -13,7 +13,7 @@ resource "aws_lambda_function" "export_findings" {
   environment {
     variables = {
       S3_BUCKET_NAME = aws_s3_bucket.inspector.id
-      KMS_KEY_ARN   = aws_kms_key.this.arn
+      KMS_KEY_ARN    = aws_kms_key.this.arn
     }
   }
 

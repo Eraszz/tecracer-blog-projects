@@ -1,8 +1,0 @@
-version: 0.2
-
-phases:
-  build:
-    on-failure: ABORT
-    commands:
-      - aws stepfunctions start-execution --state-machine-arn ${SFN_ARN}  --input "{\"AmiId\" : \"${AMI_ID}\"}" 
-

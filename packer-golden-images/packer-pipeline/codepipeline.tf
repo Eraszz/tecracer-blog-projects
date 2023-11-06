@@ -40,14 +40,15 @@ resource "aws_codepipeline" "this" {
   stage {
     name = "BuildImage"
     action {
-      name            = "Build"
-      category        = "Build"
-      owner           = "AWS"
-      provider        = "CodeBuild"
-      version         = "1"
-      run_order       = 2
-      input_artifacts = ["SOURCE_ARTIFACT"]
-      namespace       = "packerBuild"
+      name             = "Build"
+      category         = "Build"
+      owner            = "AWS"
+      provider         = "CodeBuild"
+      version          = "1"
+      run_order        = 2
+      input_artifacts  = ["SOURCE_ARTIFACT"]
+      output_artifacts = ["BUILD_ARTIFACT"]
+      namespace        = "packerBuild"
       configuration = {
         ProjectName = aws_codebuild_project.build.name
         EnvironmentVariables = jsonencode([
@@ -76,31 +77,16 @@ resource "aws_codepipeline" "this" {
     name = "ScanImage"
     action {
       name            = "Scan"
-      category        = "Build"
+      category        = "Invoke"
       owner           = "AWS"
-      provider        = "CodeBuild"
+      provider        = "StepFunctions"
       version         = "1"
       run_order       = 3
-      input_artifacts = ["SOURCE_ARTIFACT"]
+      input_artifacts = ["BUILD_ARTIFACT"]
       configuration = {
-        ProjectName = aws_codebuild_project.scan.name
-        EnvironmentVariables = jsonencode([
-          {
-            name  = "TERRAFORM_VERSION"
-            value = "1.5.4"
-            type  = "PLAINTEXT"
-          },
-          {
-            name  = "AMI_ID"
-            value = "#{packerBuild.AMI_ID}"
-            type  = "PLAINTEXT"
-          },
-          {
-            name  = "SFN_ARN"
-            value = aws_sfn_state_machine.scan_ami.arn
-            type  = "PLAINTEXT"
-          }
-        ])
+        StateMachineArn = aws_sfn_state_machine.scan_ami.arn
+        InputType       = "FilePath"
+        Input           = "stepfunction-input.json"
       }
     }
   }
@@ -209,7 +195,6 @@ data "aws_iam_policy_document" "codepipeline" {
     ]
     resources = [
       aws_codebuild_project.build.arn,
-      aws_codebuild_project.scan.arn,
       aws_codebuild_project.share.arn
     ]
   }
@@ -234,6 +219,19 @@ data "aws_iam_policy_document" "codepipeline" {
       "kms:Decrypt"
     ]
     resources = [aws_kms_key.this.arn]
+  }
+
+  statement {
+    sid = "sfnaccess"
+    actions = [
+      "states:DescribeStateMachine",
+      "states:DescribeExecution",
+      "states:StartExecution"
+    ]
+    resources = [
+      aws_sfn_state_machine.scan_ami.arn,
+      "${replace(aws_sfn_state_machine.scan_ami.arn, "stateMachine", "execution")}:*"
+      ]
   }
 }
 

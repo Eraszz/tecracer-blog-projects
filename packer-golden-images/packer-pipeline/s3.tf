@@ -65,7 +65,6 @@ data "aws_iam_policy_document" "s3_codepipeline" {
       values = [
         aws_codepipeline.this.arn,
         aws_codebuild_project.build.arn,
-        aws_codebuild_project.scan.arn,
         aws_codebuild_project.share.arn
       ]
     }

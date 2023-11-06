@@ -33,40 +33,6 @@ resource "aws_codebuild_project" "build" {
 
 
 ################################################################################
-# CodeBuild Project (Scan AMI)
-################################################################################
-
-resource "aws_codebuild_project" "scan" {
-  name                   = format("%s-%s", "scan", var.application_name)
-  service_role           = aws_iam_role.codebuild.arn
-  concurrent_build_limit = 1
-
-  environment {
-    type            = "LINUX_CONTAINER"
-    image           = "aws/codebuild/standard:7.0"
-    compute_type    = "BUILD_GENERAL1_SMALL"
-    privileged_mode = false
-  }
-
-  artifacts {
-    type = "CODEPIPELINE"
-  }
-
-  source {
-    type      = "CODEPIPELINE"
-    buildspec = file("${path.module}/buildspec/scan.buildspec.yaml")
-  }
-
-  logs_config {
-    cloudwatch_logs {
-      group_name = aws_cloudwatch_log_group.this.name
-      status     = "ENABLED"
-    }
-  }
-}
-
-
-################################################################################
 # CodeBuild Project (Share AMI)
 ################################################################################
 

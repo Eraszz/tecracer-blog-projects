@@ -102,7 +102,7 @@ data "aws_iam_policy_document" "sfn" {
     ]
     resources = [
       aws_iam_role.scan_ami.arn,
-        aws_iam_role.eventbridge.arn
+      aws_iam_role.eventbridge.arn
     ]
   }
 }

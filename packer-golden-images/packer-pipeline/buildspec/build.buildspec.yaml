@@ -31,5 +31,10 @@ phases:
 
         echo "==== Running: Get AMI ID ===="
         AMI_ID=$(jq -r '.builds[-1].artifact_id' ${MANIFEST_NAME} | cut -d ":" -f2)
-        echo $AMI_ID
 
+        STEPFUNCTION_INPUT='{"AmiId": "'"$AMI_ID"'"}'
+        echo $STEPFUNCTION_INPUT > ${CODEBUILD_SRC_DIR}/stepfunction-input.json
+
+artifacts:
+  files:
+    - stepfunction-input.json

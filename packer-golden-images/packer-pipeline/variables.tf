@@ -8,6 +8,11 @@ variable "sns_endpoint" {
   type        = string
 }
 
+variable "account_ids" {
+  description = "IDs of the accounts the AMI should be shared with."
+  type        = map(string)
+}
+
 variable "tf_state_aws_kms_alias" {
   description = "Alias of the KMS key used for the state storage."
   type        = string
