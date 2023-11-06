@@ -3,7 +3,7 @@ variable "ami_id" {
   type        = string
 }
 
-variable "account_ids" {
-  description = "IDs of the accounts the AMI should be shared with."
-  type        = set(string)
+variable "ssm_parameter_path" {
+  description = "Path to the SSM Parameter that contains the AWS Account IDs the AMI should be shared with."
+  type        = string
 }

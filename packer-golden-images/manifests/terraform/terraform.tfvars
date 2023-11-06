@@ -1,1 +1,1 @@
-account_ids = [ "xxxxxxxxxx" ]
+ssm_parameter_path = "/share-ami/account_ids"
