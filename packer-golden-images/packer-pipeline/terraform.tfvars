@@ -1,8 +1,8 @@
 application_name                    = "packer-ami-build-pipeline"
 sns_endpoint                        = "hhagen@tecracer.de"
 account_ids = {
-    dev = "843934227598"
-    prd = "850854358454"
+    dev = "xxxxx"
+    prd = "xxxxx"
 } 
 
 tf_state_aws_kms_alias              = "terraform-state-storage"
