@@ -1,5 +1,5 @@
 application_name                    = "packer-ami-build-pipeline"
-sns_endpoint                        = "hhagen@tecracer.de"
+sns_endpoint                        = "test@example.com"
 account_ids = {
     dev = "xxxxx"
     prd = "xxxxx"
