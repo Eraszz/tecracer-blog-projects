@@ -18,7 +18,7 @@ phases:
   build:
     on-failure: ABORT
     commands:
-      - cd ${CODEBUILD_SRC_DIR}/packer
+      - cd ${CODEBUILD_SRC_DIR}
       - |-
         echo "==== Running: Packer Init ===="
         packer init .
@@ -32,7 +32,7 @@ phases:
         echo "==== Running: Get AMI ID ===="
         AMI_ID=$(jq -r '.builds[-1].artifact_id' ${MANIFEST_NAME} | cut -d ":" -f2)
 
-        STEPFUNCTION_INPUT='{"AmiId": "'"$AMI_ID"'"}'
+        STEPFUNCTION_INPUT='{"AmiId": "'"$AMI_ID"'", "SsmParameter": "'"$SSM_PARAMETER_PATH"'"}'
         echo $STEPFUNCTION_INPUT > ${CODEBUILD_SRC_DIR}/stepfunction-input.json
 
 artifacts:

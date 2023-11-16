@@ -1,0 +1,51 @@
+{
+    "Comment": "Share AMI based on SSM Parameter",
+    "StartAt": "ResetImageAttribute",
+    "States": {
+      "ResetImageAttribute": {
+        "Type": "Task",
+        "Next": "GetParameter",
+        "Parameters": {
+          "Attribute": "launchPermission",
+          "ImageId.$": "$.AmiId"
+        },
+        "Resource": "arn:aws:states:::aws-sdk:ec2:resetImageAttribute",
+        "ResultPath": null
+      },
+      "GetParameter": {
+        "Type": "Task",
+        "Next": "ModifyImageAttribute",
+        "Parameters": {
+          "Name.$": "$.SsmParameter",
+          "WithDecryption": true
+        },
+        "Resource": "arn:aws:states:::aws-sdk:ssm:getParameter",
+        "ResultPath": "$.SystemsManager"
+      },
+      "ModifyImageAttribute": {
+        "Type": "Task",
+        "Next": "SNSPublish",
+        "Parameters": {
+          "Attribute": "launchPermission",
+          "ImageId.$": "$.AmiId",
+          "LaunchPermission": {
+            "Add.$": "States.StringToJson($.SystemsManager.Parameter.Value)"
+          }
+        },
+        "Resource": "arn:aws:states:::aws-sdk:ec2:modifyImageAttribute",
+        "ResultPath": null
+      },
+      "SNSPublish": {
+        "Type": "Task",
+        "End": true,
+        "Resource": "arn:aws:states:::sns:publish",
+        "Parameters": {
+          "TopicArn": "${sns_topic_arn}",
+          "Message": {
+            "AMI Sharing": "COMPLETED",
+            "AMI ID.$": "$.AmiId"
+          }
+        }
+      }
+    }
+  }

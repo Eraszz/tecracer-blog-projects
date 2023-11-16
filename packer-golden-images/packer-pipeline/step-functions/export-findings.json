@@ -1,5 +1,5 @@
 {
-  "Comment": "A description of my state machine",
+  "Comment": "Export Inspector V2 findings",
   "StartAt": "Parallel",
   "States": {
     "Parallel": {

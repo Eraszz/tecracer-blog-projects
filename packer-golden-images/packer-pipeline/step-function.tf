@@ -33,6 +33,19 @@ resource "aws_sfn_state_machine" "export_findings" {
   })
 }
 
+##################################################
+# Step-Function Part 3: Share AMI
+##################################################
+
+resource "aws_sfn_state_machine" "share_ami" {
+  name     = format("%s-%s", var.application_name, "share-ami")
+  role_arn = aws_iam_role.sfn.arn
+
+  definition = templatefile("${path.module}/step-functions/share-ami.json", {
+    sns_topic_arn = aws_sns_topic.this.arn
+  })
+}
+
 
 ################################################################################
 # IAM Role for Step-Function
@@ -61,7 +74,9 @@ data "aws_iam_policy_document" "sfn" {
     actions = [
       "ec2:RunInstances",
       "ec2:TerminateInstances",
-      "ec2:CreateTags"
+      "ec2:CreateTags",
+      "ec2:ResetImageAttribute",
+      "ec2:ModifyImageAttribute"
     ]
 
     resources = ["*"]
@@ -105,8 +120,17 @@ data "aws_iam_policy_document" "sfn" {
       aws_iam_role.eventbridge.arn
     ]
   }
-}
 
+  statement {
+    sid = "ssm"
+    actions = [
+      "ssm:GetParameter"
+    ]
+    resources = [
+      aws_ssm_parameter.secret.arn
+    ]
+  }
+}
 
 
 resource "aws_iam_policy" "sfn" {

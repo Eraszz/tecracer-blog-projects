@@ -1,5 +1,5 @@
 {
-    "Comment": "A description of my state machine",
+    "Comment": "Launch instance based on AMI to allow Inspector V2 scan",
     "StartAt": "RunInstances",
     "States": {
         "RunInstances": {

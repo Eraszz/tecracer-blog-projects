@@ -30,11 +30,6 @@ data "aws_iam_policy_document" "sns" {
     resources = [
       aws_sns_topic.this.arn
     ]
-    /*condition {
-      test     = "ArnEquals"
-      variable = "AWS:SourceAccount"
-      values   = [data.aws_caller_identity.current.id]
-    }*/
   }
 }
 

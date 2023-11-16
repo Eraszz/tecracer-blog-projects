@@ -66,8 +66,12 @@ resource "aws_codepipeline" "this" {
             name  = "MANIFEST_NAME"
             value = "packer-manifest.json"
             type  = "PLAINTEXT"
+          },
+          {
+            name  = "SSM_PARAMETER_PATH"
+            value = aws_ssm_parameter.secret.name
+            type  = "PLAINTEXT"
           }
-
         ])
       }
     }
@@ -91,7 +95,6 @@ resource "aws_codepipeline" "this" {
     }
   }
 
-
   stage {
     name = "Approve"
     action {
@@ -107,31 +110,20 @@ resource "aws_codepipeline" "this" {
     }
   }
 
-
   stage {
     name = "ShareImage"
     action {
       name            = "Share"
-      category        = "Build"
+      category        = "Invoke"
       owner           = "AWS"
-      provider        = "CodeBuild"
+      provider        = "StepFunctions"
       version         = "1"
       run_order       = 5
-      input_artifacts = ["SOURCE_ARTIFACT"]
+      input_artifacts = ["BUILD_ARTIFACT"]
       configuration = {
-        ProjectName = aws_codebuild_project.share.name
-        EnvironmentVariables = jsonencode([
-          {
-            name  = "TERRAFORM_VERSION"
-            value = "1.5.4"
-            type  = "PLAINTEXT"
-          },
-          {
-            name  = "AMI_ID"
-            value = "#{packerBuild.AMI_ID}"
-            type  = "PLAINTEXT"
-          }
-        ])
+        StateMachineArn = aws_sfn_state_machine.share_ami.arn
+        InputType       = "FilePath"
+        Input           = "stepfunction-input.json"
       }
     }
   }
@@ -194,8 +186,7 @@ data "aws_iam_policy_document" "codepipeline" {
       "codebuild:StartBuild"
     ]
     resources = [
-      aws_codebuild_project.build.arn,
-      aws_codebuild_project.share.arn
+      aws_codebuild_project.build.arn
     ]
   }
 
@@ -230,8 +221,10 @@ data "aws_iam_policy_document" "codepipeline" {
     ]
     resources = [
       aws_sfn_state_machine.scan_ami.arn,
-      "${replace(aws_sfn_state_machine.scan_ami.arn, "stateMachine", "execution")}:*"
-      ]
+      "${replace(aws_sfn_state_machine.scan_ami.arn, "stateMachine", "execution")}:*",
+      aws_sfn_state_machine.share_ami.arn,
+      "${replace(aws_sfn_state_machine.share_ami.arn, "stateMachine", "execution")}:*"
+    ]
   }
 }
 
