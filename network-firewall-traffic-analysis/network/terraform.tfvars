@@ -6,6 +6,8 @@ application_name       = "network-firewall-traffic-analysis"
 on_premises_cidr_range = "172.31.0.0/16"
 aws_cidr_range         = "10.0.0.0/8"
 
+network_firewall_on_premises_action = "DROP"
+
 ################################################################################
 # Ingress VPC
 ################################################################################
