@@ -96,7 +96,7 @@ resource "aws_networkfirewall_rule_group" "this" {
     rules_source {
       stateful_rule {
 
-        action = "DROP"
+        action = var.network_firewall_on_premises_action
         header {
           destination      = "$HOME_NET"
           destination_port = "ANY"

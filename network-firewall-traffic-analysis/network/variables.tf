@@ -17,6 +17,11 @@ variable "aws_cidr_range" {
   type        = string
 }
 
+variable "network_firewall_on_premises_action" {
+  description = "Action the AWS Network Firewall should take for traffic coming from the On-Premises network"
+  type = string
+}
+
 ################################################################################
 # Ingress VPC
 ################################################################################
@@ -135,3 +140,4 @@ variable "on_prem_vpc_private_subnets" {
   type        = list(string)
   default     = []
 }
+
