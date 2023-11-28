@@ -42,7 +42,8 @@ resource "aws_instance" "workload" {
 
   depends_on = [
     aws_ec2_transit_gateway_vpc_attachment.this,
-    module.egress
+    module.egress,
+    aws_networkfirewall_firewall.this
   ]
 
 }
