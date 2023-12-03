@@ -1,0 +1,10 @@
+{
+ "namespace": "sensor.avro",
+ "type": "record",
+ "name": "sensor",
+ "fields": [
+    {"name": "device_id", "type": "string"},
+    {"name": "temperature", "type": "int"},
+    {"name": "timestamp", "type": "string"}
+ ]
+}
