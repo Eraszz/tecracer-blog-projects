@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import java.net.URL;
 
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.ListTopicsResult;
@@ -124,8 +125,10 @@ public class LambdaHandler implements RequestHandler<String, Void> {
 
         GenericRecord sensor;
 
+        URL resource = this.getClass().getClassLoader().getResource(schema_pathname);  
+
         try {
-            Schema schema_sensor = new Parser().parse(new File(schema_pathname));
+            Schema schema_sensor = new Parser().parse(new File(resource.getPath().toString()));
             sensor = new GenericData.Record(schema_sensor);
         } catch (IOException ie) {
             ie.printStackTrace();

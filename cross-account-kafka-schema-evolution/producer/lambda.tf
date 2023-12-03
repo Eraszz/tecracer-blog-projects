@@ -28,7 +28,7 @@ resource "aws_lambda_function" "producer" {
     subnet_ids         = local.private_subnet_ids
   }
 
-  timeout     = 10
+  timeout     = 20
   memory_size = 512
 }
 
