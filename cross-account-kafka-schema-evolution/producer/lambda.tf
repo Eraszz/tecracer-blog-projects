@@ -47,7 +47,7 @@ resource "aws_cloudwatch_log_group" "lambda" {
 ################################################################################
 
 resource "aws_iam_role" "lambda" {
-  name = format("%s-%s",var.application_name, "lambda")
+  name = format("%s-%s", var.application_name, "lambda")
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -79,7 +79,7 @@ data "aws_iam_policy_document" "log_access" {
 }
 
 resource "aws_iam_policy" "log_access" {
-  name   = format("%s-%s-%s",var.application_name, "lambda", "log-access")
+  name   = format("%s-%s-%s", var.application_name, "lambda", "log-access")
   policy = data.aws_iam_policy_document.log_access.json
 }
 
@@ -106,7 +106,7 @@ data "aws_iam_policy_document" "ec2_access" {
 }
 
 resource "aws_iam_policy" "ec2_access" {
-  name   = format("%s-%s-%s",var.application_name, "lambda", "ec2-access")
+  name   = format("%s-%s-%s", var.application_name, "lambda", "ec2-access")
   policy = data.aws_iam_policy_document.ec2_access.json
 }
 
@@ -151,7 +151,7 @@ data "aws_iam_policy_document" "glue_access" {
 }
 
 resource "aws_iam_policy" "glue_access" {
-  name   = format("%s-%s-%s",var.application_name, "lambda", "glue-access")
+  name   = format("%s-%s-%s", var.application_name, "lambda", "glue-access")
   policy = data.aws_iam_policy_document.glue_access.json
 }
 
