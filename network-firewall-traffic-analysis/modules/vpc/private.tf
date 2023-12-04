@@ -3,7 +3,7 @@
 ################################################################################
 
 resource "aws_subnet" "private" {
-  for_each =  toset(var.private_subnets)
+  for_each = toset(var.private_subnets)
 
   vpc_id = aws_vpc.this.id
 

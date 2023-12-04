@@ -19,7 +19,7 @@ variable "aws_cidr_range" {
 
 variable "network_firewall_on_premises_action" {
   description = "Action the AWS Network Firewall should take for traffic coming from the On-Premises network"
-  type = string
+  type        = string
 }
 
 ################################################################################

@@ -9,7 +9,7 @@ module "inspection" {
 
   tgw_custom_routes_specific = local.firewall_endpoints
 
-/*
+  /*
   tgw_custom_routes = [{
     destination_cidr_block = "0.0.0.0/0"
     transit_gateway_id     = aws_ec2_transit_gateway.this.id

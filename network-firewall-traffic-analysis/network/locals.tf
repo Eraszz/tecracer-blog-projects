@@ -1,11 +1,11 @@
 locals {
 
- firewall_endpoints = flatten([
+  firewall_endpoints = flatten([
     for key, value in module.inspection.private_subnet_map : [{
-        vpc_endpoint_id        = tolist(aws_networkfirewall_firewall.this.firewall_status[0].sync_states)[index(keys(module.inspection.private_subnet_map), key)].attachment[0].endpoint_id
-        availability_zone      = value.availability_zone
-        destination_cidr_block = "0.0.0.0/0"
-      } 
+      vpc_endpoint_id        = tolist(aws_networkfirewall_firewall.this.firewall_status[0].sync_states)[index(keys(module.inspection.private_subnet_map), key)].attachment[0].endpoint_id
+      availability_zone      = value.availability_zone
+      destination_cidr_block = "0.0.0.0/0"
+      }
     ]
   ])
 
@@ -16,7 +16,7 @@ locals {
     destination_cidr_block = "0.0.0.0/0"
   }]
   */
-  
+
 
   nlb_private_ipv4_addresses      = { for value in aws_lb.workload.subnet_mapping : value.subnet_id => value.private_ipv4_address }
   nlb_private_ipv4_addresses_list = [for value in aws_lb.workload.subnet_mapping : value.private_ipv4_address]

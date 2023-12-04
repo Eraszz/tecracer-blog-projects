@@ -15,13 +15,13 @@ resource "aws_instance" "firewall" {
 
   user_data = templatefile("${path.module}/src/strongswan_user_data.sh", {
     on_premises_network_cidr_range = var.vpc_cidr_block
-    aws_network_cidr_range = var.aws_network.cidr_range
-    on_premises_private_ip = local.vpn_wan_ip
-    on_premises_peer_ip = aws_eip.this.public_ip 
-    aws_network_peer_ip_1 = var.aws_network.peer_ips[0]
-    aws_network_peer_ip_2 = var.aws_network.peer_ips[1]
-    vpn_tunnel1_preshared_key = var.aws_network.preshared_keys[0]
-    vpn_tunnel2_preshared_key = var.aws_network.preshared_keys[1]
+    aws_network_cidr_range         = var.aws_network.cidr_range
+    on_premises_private_ip         = local.vpn_wan_ip
+    on_premises_peer_ip            = aws_eip.this.public_ip
+    aws_network_peer_ip_1          = var.aws_network.peer_ips[0]
+    aws_network_peer_ip_2          = var.aws_network.peer_ips[1]
+    vpn_tunnel1_preshared_key      = var.aws_network.preshared_keys[0]
+    vpn_tunnel2_preshared_key      = var.aws_network.preshared_keys[1]
   })
 
   root_block_device {

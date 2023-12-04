@@ -4,6 +4,6 @@ output "vpn_peer_ip" {
 }
 
 output "lan_eni_id" {
- description = "IP of the LAN eni."
+  description = "IP of the LAN eni."
   value       = aws_network_interface.this.id
 }

@@ -3,7 +3,7 @@
 ################################################################################
 
 resource "aws_secretsmanager_secret" "this" {
-  name = var.application_name
+  name       = var.application_name
   kms_key_id = aws_kms_key.this.id
 }
 

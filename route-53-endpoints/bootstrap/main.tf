@@ -22,15 +22,15 @@ module "on_premises" {
   availability_zones = var.availability_zones
 
   aws_network = {
-    cidr_range  = var.aws_cidr_block
-    peer_ips    = [
-      module.aws_site.vpn_output_map.tunnel1_address, 
+    cidr_range = var.aws_cidr_block
+    peer_ips = [
+      module.aws_site.vpn_output_map.tunnel1_address,
       module.aws_site.vpn_output_map.tunnel2_address
-      ]
+    ]
     preshared_keys = [
-      module.aws_site.vpn_output_map.tunnel1_preshared_key, 
+      module.aws_site.vpn_output_map.tunnel1_preshared_key,
       module.aws_site.vpn_output_map.tunnel2_preshared_key
-      ]
+    ]
     domain_name = "aws-site.com"
   }
 }

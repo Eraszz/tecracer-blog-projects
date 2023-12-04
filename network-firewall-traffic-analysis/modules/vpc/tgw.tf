@@ -3,7 +3,7 @@
 ################################################################################
 
 resource "aws_subnet" "tgw" {
-  for_each =  toset(var.tgw_subnets)
+  for_each = toset(var.tgw_subnets)
 
   vpc_id = aws_vpc.this.id
 
