@@ -19,6 +19,16 @@ variable "allowed_service_principal_arns" {
 }
 
 variable "schema_pathname" {
-  description = "Name of the Sensor schema avsc file"
+  description = "Name of the Sensor schema avsc file."
+  type        = string
+}
+
+variable "schema_name" {
+  description = "Name of the Sensor schema."
+  type        = string
+}
+
+variable "kafka_topic_name" {
+  description = "Name of the Kafka topic."
   type        = string
 }

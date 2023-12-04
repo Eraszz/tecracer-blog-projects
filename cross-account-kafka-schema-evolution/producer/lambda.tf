@@ -2,9 +2,9 @@
 # Lambda Kafka Consumer
 ################################################################################
 
-resource "aws_lambda_function" "producer" {
+resource "aws_lambda_function" "this" {
   function_name = var.application_name
-  role          = aws_iam_role.this.arn
+  role          = aws_iam_role.lambda.arn
 
   s3_bucket        = aws_s3_bucket.this.id
   s3_key           = aws_s3_object.this.key
@@ -15,16 +15,16 @@ resource "aws_lambda_function" "producer" {
   environment {
     variables = {
       BOOTSTRAP_SERVERS_CONFIG = aws_msk_cluster.this.bootstrap_brokers_tls
-      TOPIC                    = var.application_name
+      TOPIC                    = var.kafka_topic_name
       REGISTRY_NAME            = aws_glue_registry.this.registry_name
-      SCHEMA_NAME              = "sensor"
+      SCHEMA_NAME              = var.schema_name
       SCHEMA_PATHNAME          = var.schema_pathname
       DEVICE_ID                = "000001"
     }
   }
 
   vpc_config {
-    security_group_ids = [aws_security_group.producer.id]
+    security_group_ids = [aws_security_group.lambda.id]
     subnet_ids         = local.private_subnet_ids
   }
 
@@ -36,7 +36,7 @@ resource "aws_lambda_function" "producer" {
 # Cloudwatch Log Group
 ################################################################################
 
-resource "aws_cloudwatch_log_group" "producer" {
+resource "aws_cloudwatch_log_group" "lambda" {
   name              = "/aws/lambda/${var.application_name}"
   retention_in_days = 30
 }
@@ -46,8 +46,8 @@ resource "aws_cloudwatch_log_group" "producer" {
 # Lambda Role
 ################################################################################
 
-resource "aws_iam_role" "this" {
-  name = "${var.application_name}-lambda"
+resource "aws_iam_role" "lambda" {
+  name = format("%s-%s",var.application_name, "lambda")
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -73,18 +73,18 @@ data "aws_iam_policy_document" "log_access" {
     ]
 
     resources = [
-      "${aws_cloudwatch_log_group.producer.arn}:*"
+      "${aws_cloudwatch_log_group.lambda.arn}:*"
     ]
   }
 }
 
 resource "aws_iam_policy" "log_access" {
-  name   = "log-access"
+  name   = format("%s-%s-%s",var.application_name, "lambda", "log-access")
   policy = data.aws_iam_policy_document.log_access.json
 }
 
 resource "aws_iam_role_policy_attachment" "log_access" {
-  role       = aws_iam_role.this.name
+  role       = aws_iam_role.lambda.name
   policy_arn = aws_iam_policy.log_access.arn
 }
 
@@ -106,12 +106,12 @@ data "aws_iam_policy_document" "ec2_access" {
 }
 
 resource "aws_iam_policy" "ec2_access" {
-  name   = "ec2-access"
+  name   = format("%s-%s-%s",var.application_name, "lambda", "ec2-access")
   policy = data.aws_iam_policy_document.ec2_access.json
 }
 
 resource "aws_iam_role_policy_attachment" "ec2_access" {
-  role       = aws_iam_role.this.name
+  role       = aws_iam_role.lambda.name
   policy_arn = aws_iam_policy.ec2_access.arn
 }
 
@@ -151,12 +151,12 @@ data "aws_iam_policy_document" "glue_access" {
 }
 
 resource "aws_iam_policy" "glue_access" {
-  name   = "glue-access"
+  name   = format("%s-%s-%s",var.application_name, "lambda", "glue-access")
   policy = data.aws_iam_policy_document.glue_access.json
 }
 
 resource "aws_iam_role_policy_attachment" "glue_access" {
-  role       = aws_iam_role.this.name
+  role       = aws_iam_role.lambda.name
   policy_arn = aws_iam_policy.glue_access.arn
 }
 
@@ -165,13 +165,13 @@ resource "aws_iam_role_policy_attachment" "glue_access" {
 # Lambda Security Group
 ################################################################################
 
-resource "aws_security_group" "producer" {
-  name   = format("%s-%s", var.application_name, "producer")
+resource "aws_security_group" "lambda" {
+  name   = format("%s-%s", var.application_name, "lambda")
   vpc_id = aws_vpc.this.id
 }
 
-resource "aws_security_group_rule" "producer_egress" {
-  security_group_id = aws_security_group.producer.id
+resource "aws_security_group_rule" "lambda_egress" {
+  security_group_id = aws_security_group.lambda.id
 
   type        = "egress"
   from_port   = 0

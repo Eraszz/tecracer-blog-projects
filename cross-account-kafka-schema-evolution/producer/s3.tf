@@ -12,5 +12,5 @@ resource "aws_s3_object" "this" {
   key    = format("%s", var.application_name)
   source = "${path.module}/code/target/producer-1.0.jar"
 
-  etag = filemd5("${path.module}/code/target/producer-1.0.jar")
+  source_hash = filemd5("${path.module}/code/target/producer-1.0.jar")
 }

@@ -9,6 +9,7 @@ import java.util.Random;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.net.URL;
 
@@ -32,7 +33,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 
-public class LambdaHandler implements RequestHandler<String, Void> {
+public class LambdaHandler implements RequestHandler<Map<String,String>, Void> {
 
     private static final Properties properties = new Properties();
     private static final String bootstrap_servers_config = System.getenv("BOOTSTRAP_SERVERS_CONFIG");
@@ -44,7 +45,7 @@ public class LambdaHandler implements RequestHandler<String, Void> {
     private static final String device_id = System.getenv("DEVICE_ID");
 
     @Override
-    public Void handleRequest(String event, Context context) {
+    public Void handleRequest(Map<String,String> event, Context context) {
 
         setProperties();
         putRecord();
