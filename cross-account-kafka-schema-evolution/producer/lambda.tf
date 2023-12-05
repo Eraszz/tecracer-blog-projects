@@ -1,5 +1,5 @@
 ################################################################################
-# Lambda Kafka Consumer
+# Lambda Kafka Producer
 ################################################################################
 
 resource "aws_lambda_function" "this" {
@@ -10,7 +10,7 @@ resource "aws_lambda_function" "this" {
   s3_key           = aws_s3_object.this.key
   handler          = "producer.LambdaHandler"
   runtime          = "java21"
-  source_code_hash = base64sha256(filebase64("${path.module}/code/target/producer-1.0.jar"))
+  source_code_hash = base64encode("${path.module}/code/target/producer-1.0.jar")
 
   environment {
     variables = {
@@ -30,6 +30,8 @@ resource "aws_lambda_function" "this" {
 
   timeout     = 20
   memory_size = 512
+
+  depends_on = [ aws_s3_object.this ]
 }
 
 ################################################################################
@@ -145,7 +147,7 @@ data "aws_iam_policy_document" "glue_access" {
       format("arn:aws:glue:%s:%s:schema/%s/*",
         data.aws_region.current.name,
         data.aws_caller_identity.current.account_id,
-      aws_glue_registry.this.registry_name)
+        aws_glue_registry.this.registry_name)
     ]
   }
 }
