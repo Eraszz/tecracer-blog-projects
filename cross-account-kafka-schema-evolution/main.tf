@@ -9,6 +9,8 @@ module "consumer" {
   kafka_cluster_information_map = module.producer.kafka_cluster_information_map
 
   kafka_topic_name = var.application_name
+  glue_schema_registry_name = module.producer.glue_schema_registry_name
+  cross_account_glue_access_role = module.producer.cross_account_glue_access_role
 }
 
 
