@@ -1,21 +1,37 @@
 package consumer;
 
-import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.RequestHandler;
-
+import java.io.IOException;
 import java.util.Map;
+import java.io.File;
 
-public class LambdaHandler implements RequestHandler<Map<String, Object>, Void> {
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+public class test {
 
     private static final String awsRegion = System.getenv("AWS_REGION");
     private static final String registryName = System.getenv("REGISTRY_NAME");
     private static final String roleArn = System.getenv("ROLE_ARN");
-    private static final String dynamodbTableName = System.getenv("DYNAMODB_TABLE_NAME");
+    public static void main(String[] args) {
 
-    @Override
-    public Void handleRequest(Map<String, Object> event, Context context) {
+        String jsonFilePath = "test.json";
+        Map<String, Object> event = null;
+
+        try {
+            // Use Jackson ObjectMapper to read JSON file and convert to Map
+            ObjectMapper objectMapper = new ObjectMapper();
+            File jsonFile = new File(jsonFilePath);
+            event = objectMapper.readValue(jsonFile, Map.class);
+
+            // Print the Map
+            System.out.println("Content of Map:");
+            for (Map.Entry<String, Object> entry : event.entrySet()) {
+                System.out.println(entry.getKey() + ": " + entry.getValue());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         LambdaDeserializer deserializer = new LambdaDeserializer(awsRegion, registryName, roleArn);
-        StoreRecord storeRecord = new StoreRecord(dynamodbTableName);
 
         if (event.containsKey("records")) {
             @SuppressWarnings("unchecked")
@@ -29,14 +45,11 @@ public class LambdaHandler implements RequestHandler<Map<String, Object>, Void> 
                         if (record instanceof Map) {
                             @SuppressWarnings("unchecked")
                             EventRecord eventRecord = new EventRecord((Map<String, Object>) record);
-                            Map<String, Object> deserializedRecord = eventRecord.parseRecord(deserializer, false);
-                            System.out.println(deserializedRecord);
-                            storeRecord.putItem(eventRecord.getValue());
+                            System.out.println(eventRecord.parseRecord(deserializer, false));
                         }
                     }
                 }
             }
         }
-        return null;
     }
 }

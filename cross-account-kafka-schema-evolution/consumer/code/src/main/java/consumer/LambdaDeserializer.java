@@ -13,6 +13,8 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sts.model.AssumeRoleRequest;
 import software.amazon.awssdk.services.sts.model.Credentials;
 import  software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
+
 
 public class LambdaDeserializer implements Deserializer<Object> {
     private String awsRegion;
@@ -26,7 +28,7 @@ public class LambdaDeserializer implements Deserializer<Object> {
     }
 
     private AwsCredentialsProvider getCredentialsProvider() {
-        StsClient stsClient = StsClient.builder().region(Region.of(awsRegion)).build();
+        StsClient stsClient = StsClient.builder().httpClientBuilder(UrlConnectionHttpClient.builder()).region(Region.of(awsRegion)).build();
         AssumeRoleRequest roleRequest = AssumeRoleRequest.builder()
                 .roleArn(roleArn)
                 .roleSessionName("cross-account")

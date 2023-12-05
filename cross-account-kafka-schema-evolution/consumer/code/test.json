@@ -1,0 +1,17 @@
+{
+    "eventSource": "SelfManagedKafka",
+    "bootstrapServers": "b-2.crossaccountkafkasc.de1i3b.c3.kafka.eu-central-1.amazonaws.com:9094,b-1.crossaccountkafkasc.de1i3b.c3.kafka.eu-central-1.amazonaws.com:9094",
+    "records": {
+        "cross-account-kafka-schema-evolution-1": [
+            {
+                "topic": "cross-account-kafka-schema-evolution",
+                "partition": 1,
+                "offset": 0,
+                "timestamp": 1701773490902,
+                "timestampType": "CREATE_TIME",
+                "value": "AwA75HNYxutNrouvj0oW+m0MDDAwMDAwMR4uMjAyMy0xMi0wNSAxMDo1MTozMC43NDU=",
+                "headers": []
+            }
+        ]
+    }
+}
