@@ -6,9 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
+import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
 
 public class StoreRecord {
-
     private String dynamodbTableName;
 
     public StoreRecord(String dynamodbTableName) {
@@ -19,7 +19,7 @@ public class StoreRecord {
 
         Map<String, AttributeValue> item = getAttributeMap(jsonString);
 
-        DynamoDbClient dynamoDbClient = DynamoDbClient.create();
+        DynamoDbClient dynamoDbClient = DynamoDbClient.builder().httpClient(UrlConnectionHttpClient.builder().build()).build();;
         PutItemRequest putItemRequest = PutItemRequest.builder()
         .tableName(dynamodbTableName)
         .item(item)
@@ -41,13 +41,14 @@ public class StoreRecord {
             for (Map.Entry<String, Object> entry : jsonData.entrySet()) {
                 String key = entry.getKey();
                 Object value = entry.getValue();
-                String stringValue = (String) value;
-
+                
                 AttributeValue attributeValue;
 
                 if (value instanceof String) {
+                    String stringValue = String.valueOf(value);
                     attributeValue = AttributeValue.builder().s(stringValue).build();
                 } else if (value instanceof Integer) {
+                    String stringValue = String.valueOf(value);
                     attributeValue = AttributeValue.builder().n(stringValue).build();
                 } else {
                     System.out.println(key + " has an unknown type");

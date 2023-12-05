@@ -30,8 +30,9 @@ public class LambdaHandler implements RequestHandler<Map<String, Object>, Void> 
                             @SuppressWarnings("unchecked")
                             EventRecord eventRecord = new EventRecord((Map<String, Object>) record);
                             Map<String, Object> deserializedRecord = eventRecord.parseRecord(deserializer, false);
-                            System.out.println(deserializedRecord);
-                            storeRecord.putItem(eventRecord.getValue());
+
+                            String value = deserializedRecord.get("value").toString();
+                            storeRecord.putItem(value);
                         }
                     }
                 }
