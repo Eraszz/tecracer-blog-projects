@@ -26,3 +26,13 @@ variable "kafka_topic_name" {
   description = "Name of the Kafka topic."
   type        = string
 }
+
+variable "glue_schema_registry_name" {
+  description = "Name of the Glue Schema Registry"
+  type        = string
+}
+
+variable "cross_account_glue_access_role" {
+  description = "Role to assume in order to access Schema Registry."
+  type = string
+}

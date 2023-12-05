@@ -20,7 +20,8 @@ locals {
   private_subnet_cidrs = [for k, v in aws_subnet.private : v.cidr_block]
 
 
-  broker_ports          = toset([for k, v in var.kafka_cluster_information_map : v.broker_port])
+  broker_ports          = [for k, v in var.kafka_cluster_information_map : v.broker_port]
+  broker_port           = local.broker_ports[0]
   bootstrap_brokers_tls = join(",", [for k, v in var.kafka_cluster_information_map : "${v.endpoint_url}:${v.broker_port}"])
 
 

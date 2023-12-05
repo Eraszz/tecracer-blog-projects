@@ -14,7 +14,6 @@ import software.amazon.awssdk.services.sts.model.AssumeRoleRequest;
 import software.amazon.awssdk.services.sts.model.Credentials;
 import  software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 
-
 public class LambdaDeserializer implements Deserializer<Object> {
     private String awsRegion;
     private String registryName;
@@ -30,6 +29,7 @@ public class LambdaDeserializer implements Deserializer<Object> {
         StsClient stsClient = StsClient.builder().region(Region.of(awsRegion)).build();
         AssumeRoleRequest roleRequest = AssumeRoleRequest.builder()
                 .roleArn(roleArn)
+                .roleSessionName("cross-account")
                 .build();
         
         AssumeRoleResponse roleResponse = stsClient.assumeRole(roleRequest);
@@ -45,6 +45,7 @@ public class LambdaDeserializer implements Deserializer<Object> {
         Map<String, Object> config = new HashMap<>();
         config.put(AWSSchemaRegistryConstants.AWS_REGION, awsRegion);
         config.put(AWSSchemaRegistryConstants.REGISTRY_NAME, registryName);
+        config.put(AWSSchemaRegistryConstants.AVRO_RECORD_TYPE, "GENERIC_RECORD");
         
         return config;
     }

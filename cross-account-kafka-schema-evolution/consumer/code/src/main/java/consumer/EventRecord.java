@@ -5,26 +5,27 @@ import java.util.Map;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Base64;
 
 public class EventRecord {
     private String topic;
     private int partition;
-    private long offset;
+    private int offset;
     private long timestamp;
     private String timestampType;
     private String value;
-    private Map<String, Object> headers;
+    private ArrayList<String> headers;
 
     @SuppressWarnings("unchecked")
     public EventRecord(Map<String, Object> record) {
         this.topic = (String) record.get("topic");
         this.partition = (int) record.get("partition");
-        this.offset = (long) record.get("offset");
+        this.offset = (int) record.get("offset");
         this.timestamp = (long) record.get("timestamp");
         this.timestampType = (String) record.get("timestampType");
         this.value = (String) record.get("value");
-        this.headers = (Map<String, Object>) record.get("headers");
+        this.headers = (ArrayList<String>) record.get("headers");
     }
 
     public Object parseValue(LambdaDeserializer deserializer) {
@@ -65,7 +66,7 @@ public class EventRecord {
         return partition;
     }
 
-    public long getOffset() {
+    public int getOffset() {
         return offset;
     }
 
@@ -81,7 +82,7 @@ public class EventRecord {
         return value;
     }
 
-    public Map<String, Object> getHeaders() {
+    public ArrayList<String> getHeaders() {
         return headers;
     }
 }

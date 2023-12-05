@@ -6,15 +6,16 @@ resource "aws_lambda_function" "this" {
   function_name = var.application_name
   role          = aws_iam_role.this.arn
 
-  filename         = data.archive_file.this.output_path
-  handler          = "index.lambda_handler"
-  runtime          = "python3.9"
-  source_code_hash = data.archive_file.this.output_base64sha256
+  s3_bucket        = aws_s3_bucket.this.id
+  s3_key           = aws_s3_object.this.key
+  handler          = "consumer.LambdaHandler"
+  runtime          = "java21"
+  source_code_hash = base64encode("${path.module}/code/target/consumer-1.0.jar")
 
   environment {
     variables = {
-      KAFKA_TOPIC         = var.kafka_topic_name
-      DYNAMODB_TABLE_NAME = aws_dynamodb_table.this.name
+      REGISTRY_NAME = var.glue_schema_registry_name
+      ROLE_ARN = var.cross_account_glue_access_role
     }
   }
 
@@ -23,14 +24,8 @@ resource "aws_lambda_function" "this" {
     subnet_ids         = local.private_subnet_ids
   }
 
-  timeout     = 10
+  timeout     = 20
   memory_size = 512
-}
-
-data "archive_file" "this" {
-  type        = "zip"
-  source_file = "${path.module}/src/index.py"
-  output_path = "${path.module}/src/python.zip"
 }
 
 
@@ -63,6 +58,29 @@ resource "aws_iam_role" "this" {
       },
     ]
   })
+}
+
+data "aws_iam_policy_document" "iam_access" {
+  statement {
+
+    actions = [
+      "sts:AssumeRole"
+    ]
+
+    resources = [
+      var.cross_account_glue_access_role
+    ]
+  }
+}
+
+resource "aws_iam_policy" "iam_access" {
+  name   = format("%s-%s-%s", var.application_name, "lambda", "iam-access")
+  policy = data.aws_iam_policy_document.iam_access.json
+}
+
+resource "aws_iam_role_policy_attachment" "iam_access" {
+  role       = aws_iam_role.this.name
+  policy_arn = aws_iam_policy.iam_access.arn
 }
 
 

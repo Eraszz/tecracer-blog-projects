@@ -23,13 +23,11 @@ resource "aws_security_group" "this" {
 }
 
 resource "aws_security_group_rule" "ingress" {
-  for_each = local.broker_ports
-
   security_group_id = aws_security_group.this.id
 
   type        = "ingress"
-  from_port   = each.value
-  to_port     = each.value
+  from_port   = local.broker_port
+  to_port     = local.broker_port
   protocol    = "tcp"
   cidr_blocks = local.private_subnet_cidrs
 }
