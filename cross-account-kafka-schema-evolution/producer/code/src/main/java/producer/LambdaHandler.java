@@ -24,7 +24,7 @@ import software.amazon.awssdk.services.glue.model.Compatibility;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 
-public class LambdaHandler implements RequestHandler<Map<String, String>, Void> {
+public class LambdaHandler implements RequestHandler<Map<String, Object>, Void> {
 
     private static final Properties properties = new Properties();
     private static final String bootstrapServersConfig = System.getenv("BOOTSTRAP_SERVERS_CONFIG");
@@ -36,9 +36,22 @@ public class LambdaHandler implements RequestHandler<Map<String, String>, Void> 
     private static final String deviceId = System.getenv("DEVICE_ID");
 
     @Override
-    public Void handleRequest(Map<String, String> event, Context context) {
+    public Void handleRequest(Map<String, Object> event, Context context) {
+        int temperature = (int) event.get("temperature");
+
         setProperties();
-        putRecord();
+
+        if (!createTopic()) {
+            return null;
+        }
+
+        if ("schema_v2.avsc".equals(schemaPathname)) {
+            int humidity = (int) event.get("humidity");
+            putRecord(temperature, humidity);
+        } else {
+            putRecord(temperature);
+        }
+        
         return null;
     }
 
@@ -97,10 +110,7 @@ public class LambdaHandler implements RequestHandler<Map<String, String>, Void> 
         return null;
     }
 
-    private boolean putRecord() {
-        if (!createTopic()) {
-            return false;
-        }
+    private boolean putRecord(int temperature) {
 
         GenericRecord sensor;
 
@@ -118,12 +128,37 @@ public class LambdaHandler implements RequestHandler<Map<String, String>, Void> 
         final ProducerRecord<String, GenericRecord> record = new ProducerRecord<>(topic, sensor);
 
         sensor.put("device_id", deviceId);
-        sensor.put("temperature", getTemperature());
+        sensor.put("temperature", temperature);
         sensor.put("timestamp", getTimestamp());
 
-        if ("schema_v2.avsc".equals(schemaPathname)) {
-            sensor.put("humidity", getHumidity());
+        producer.send(record);
+        producer.flush();
+        producer.close();
+
+        return true;
+    }
+
+    private boolean putRecord(int temperature, int humidity) {
+
+        GenericRecord sensor;
+
+        URL resource = this.getClass().getClassLoader().getResource(schemaPathname);
+
+        try {
+            Schema schemaSensor = new Parser().parse(new File(resource.getPath()));
+            sensor = new GenericData.Record(schemaSensor);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
         }
+
+        KafkaProducer<String, GenericRecord> producer = new KafkaProducer<>(properties);
+        final ProducerRecord<String, GenericRecord> record = new ProducerRecord<>(topic, sensor);
+
+        sensor.put("device_id", deviceId);
+        sensor.put("temperature", temperature);
+        sensor.put("timestamp", getTimestamp());
+        sensor.put("humidity", humidity+"%");
 
         producer.send(record);
         producer.flush();
