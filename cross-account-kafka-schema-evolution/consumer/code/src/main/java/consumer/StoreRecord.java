@@ -5,7 +5,8 @@ import java.util.HashMap;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
-import software.amazon.awssdk.services.dynamodb.model.*;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
 
 public class StoreRecord {

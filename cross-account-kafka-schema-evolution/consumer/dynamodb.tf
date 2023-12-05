@@ -7,11 +7,17 @@ resource "aws_dynamodb_table" "this" {
 
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "device_id"
+  range_key    = "timestamp"
 
   table_class = "STANDARD"
 
   attribute {
     name = "device_id"
+    type = "S"
+  }
+
+  attribute {
+    name = "timestamp"
     type = "S"
   }
 }
