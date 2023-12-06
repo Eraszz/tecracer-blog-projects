@@ -40,34 +40,4 @@ public class LambdaHandler implements RequestHandler<Map<String, Object>, Void> 
 
         return null;
     }
-
-    public static void main(String[] args) {
-
-        Map<String, Object> event = new HashMap<>();
-
-        // Add key-value pairs to the map
-        event.put("temperature", 25);
-        event.put("New", "nrewnrw");
-        event.put("alpha", 123);
-
-        event.put("brandy", 123);
-
-        SensorDataProducer sensorDataProducer = new SensorDataProducer(
-                topic,
-                bootstrapServersConfig,
-                awsRegion,
-                registryName,
-                schemaName,
-                false);
-
-        SensorData sensorData = new SensorData(deviceId, event);
-
-        GlueSchemaRegistryHandler glueSchemaRegistryHandler = new GlueSchemaRegistryHandler(awsRegion, registryName);
-
-        AvroSchemaGenerator avroSchemaGenerator = new AvroSchemaGenerator(schemaNameSpace, schemaName, sensorData);
-        GenericRecord sensorRecord = avroSchemaGenerator
-                .getGenericRecord(glueSchemaRegistryHandler.getLatestSchemaFieldNamesAndTypes(schemaName));
-
-        sensorDataProducer.putKafkaRecord(sensorRecord);
-    }
 }
