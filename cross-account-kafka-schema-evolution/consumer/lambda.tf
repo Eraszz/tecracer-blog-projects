@@ -14,8 +14,8 @@ resource "aws_lambda_function" "this" {
 
   environment {
     variables = {
-      REGISTRY_NAME = var.glue_schema_registry_name
-      ROLE_ARN = var.cross_account_glue_access_role
+      REGISTRY_NAME       = var.glue_schema_registry_name
+      ROLE_ARN            = var.cross_account_glue_access_role
       DYNAMODB_TABLE_NAME = aws_dynamodb_table.this.name
     }
   }

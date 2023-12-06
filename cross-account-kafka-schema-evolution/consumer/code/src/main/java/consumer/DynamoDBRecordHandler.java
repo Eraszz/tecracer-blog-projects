@@ -9,30 +9,32 @@ import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
 
-public class StoreRecord {
+public class DynamoDBRecordHandler {
     private String dynamodbTableName;
 
-    public StoreRecord(String dynamodbTableName) {
+    public DynamoDBRecordHandler(String dynamodbTableName) {
         this.dynamodbTableName = dynamodbTableName;
     }
 
-    public Void putItem(String jsonString) {
+    public Void storeItem(String jsonString) {
 
-        Map<String, AttributeValue> item = getAttributeMap(jsonString);
+        Map<String, AttributeValue> item = createAttributeMap(jsonString);
 
-        DynamoDbClient dynamoDbClient = DynamoDbClient.builder().httpClient(UrlConnectionHttpClient.builder().build()).build();;
+        DynamoDbClient dynamoDbClient = DynamoDbClient.builder().httpClient(UrlConnectionHttpClient.builder().build())
+                .build();
+        ;
         PutItemRequest putItemRequest = PutItemRequest.builder()
-        .tableName(dynamodbTableName)
-        .item(item)
-        .build();
+                .tableName(dynamodbTableName)
+                .item(item)
+                .build();
 
         dynamoDbClient.putItem(putItemRequest);
 
         return null;
     }
-    
+
     @SuppressWarnings("unchecked")
-    private Map<String, AttributeValue> getAttributeMap(String jsonString){
+    private Map<String, AttributeValue> createAttributeMap(String jsonString) {
         Map<String, AttributeValue> item = new HashMap<>();
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -42,7 +44,7 @@ public class StoreRecord {
             for (Map.Entry<String, Object> entry : jsonData.entrySet()) {
                 String key = entry.getKey();
                 Object value = entry.getValue();
-                
+
                 AttributeValue attributeValue;
 
                 if (value instanceof String) {
@@ -60,7 +62,7 @@ public class StoreRecord {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        } 
+        }
 
         return item;
     }

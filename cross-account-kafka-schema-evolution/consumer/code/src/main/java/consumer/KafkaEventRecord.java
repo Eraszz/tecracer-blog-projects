@@ -2,13 +2,14 @@ package consumer;
 
 import java.util.Map;
 
+import org.apache.kafka.common.serialization.Deserializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Base64;
 
-public class EventRecord {
+public class KafkaEventRecord {
     private String topic;
     private int partition;
     private int offset;
@@ -18,7 +19,7 @@ public class EventRecord {
     private ArrayList<String> headers;
 
     @SuppressWarnings("unchecked")
-    public EventRecord(Map<String, Object> record) {
+    public KafkaEventRecord(Map<String, Object> record) {
         this.topic = (String) record.get("topic");
         this.partition = (int) record.get("partition");
         this.offset = (int) record.get("offset");
@@ -28,12 +29,12 @@ public class EventRecord {
         this.headers = (ArrayList<String>) record.get("headers");
     }
 
-    public Object parseValue(LambdaDeserializer deserializer) {
+    public Object parseValue(Deserializer<Object> deserializer) {
         byte[] decodedValue = Base64.getDecoder().decode(this.value);
         return deserializer.deserialize(this.topic, decodedValue);
     }
 
-    public Map<String, Object> parseRecord(LambdaDeserializer deserializer, boolean toJson) {
+    public Map<String, Object> parseRecord(Deserializer<Object> deserializer, boolean toJson) {
         Map<String, Object> rec = new HashMap<>(Map.of(
                 "topic", this.topic,
                 "partition", this.partition,
@@ -41,8 +42,7 @@ public class EventRecord {
                 "timestamp", this.timestamp,
                 "timestampType", this.timestampType,
                 "value", this.parseValue(deserializer),
-                "headers", this.headers
-        ));
+                "headers", this.headers));
 
         if (toJson) {
             return serialize(rec);
@@ -54,35 +54,7 @@ public class EventRecord {
     @SuppressWarnings("unchecked")
     private Map<String, Object> serialize(Map<String, Object> obj) {
         ObjectMapper objectMapper = new ObjectMapper();
-        
+
         return objectMapper.convertValue(obj, Map.class);
-    }
-
-    public String getTopic() {
-        return topic;
-    }
-
-    public int getPartition() {
-        return partition;
-    }
-
-    public int getOffset() {
-        return offset;
-    }
-
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    public String getTimestampType() {
-        return timestampType;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public ArrayList<String> getHeaders() {
-        return headers;
     }
 }

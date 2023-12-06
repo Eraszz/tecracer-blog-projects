@@ -34,5 +34,5 @@ variable "glue_schema_registry_name" {
 
 variable "cross_account_glue_access_role" {
   description = "Role to assume in order to access Schema Registry."
-  type = string
+  type        = string
 }

@@ -14,8 +14,9 @@ public class LambdaHandler implements RequestHandler<Map<String, Object>, Void> 
 
     @Override
     public Void handleRequest(Map<String, Object> event, Context context) {
-        LambdaDeserializer deserializer = new LambdaDeserializer(awsRegion, registryName, roleArn);
-        StoreRecord storeRecord = new StoreRecord(dynamodbTableName);
+        AwsSchemaRegistryDeserializer deserializer = new AwsSchemaRegistryDeserializer(awsRegion, registryName,
+                roleArn);
+        DynamoDBRecordHandler DynamoDBRecordHandler = new DynamoDBRecordHandler(dynamodbTableName);
 
         if (event.containsKey("records")) {
             @SuppressWarnings("unchecked")
@@ -28,11 +29,11 @@ public class LambdaHandler implements RequestHandler<Map<String, Object>, Void> 
                     for (Object record : (Iterable<?>) records) {
                         if (record instanceof Map) {
                             @SuppressWarnings("unchecked")
-                            EventRecord eventRecord = new EventRecord((Map<String, Object>) record);
+                            KafkaEventRecord eventRecord = new KafkaEventRecord((Map<String, Object>) record);
                             Map<String, Object> deserializedRecord = eventRecord.parseRecord(deserializer, false);
 
                             String value = deserializedRecord.get("value").toString();
-                            storeRecord.putItem(value);
+                            DynamoDBRecordHandler.storeItem(value);
                         }
                     }
                 }
