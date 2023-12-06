@@ -7,22 +7,29 @@ import java.util.Map;
 
 public class SensorData implements GenericSensorData {
     String deviceId;
-    int temperature;
     String timestamp;
+    Map<String, Object> dataObject;
 
     public SensorData(
             String deviceId,
-            int temperature) {
+            Map<String, Object> dataObject) {
         this.deviceId = deviceId;
-        this.temperature = temperature;
         this.timestamp = createTimestamp();
+        this.dataObject = dataObject;
     }
 
     public Map<String, Object> getSensorData() {
         Map<String, Object> dataMap = new HashMap<>();
         dataMap.put("deviceId", deviceId);
         dataMap.put("timestamp", timestamp);
-        dataMap.put("temperature", temperature);
+
+        for (Map.Entry<String, Object> entry : dataObject.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+
+            dataMap.put(key, value);
+        }
+
         return dataMap;
     }
 
@@ -38,8 +45,8 @@ public class SensorData implements GenericSensorData {
         return String.format("%d-%02d-%02d %02d:%02d:%02d.%03d", year, month, day, hour, minute, second, millis);
     }
 
-    public int getTemperature() {
-        return temperature;
+    public Map<String, Object> getDataObject() {
+        return dataObject;
     }
 
     public String deviceId() {

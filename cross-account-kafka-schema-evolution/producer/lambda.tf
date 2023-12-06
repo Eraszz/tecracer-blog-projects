@@ -18,7 +18,7 @@ resource "aws_lambda_function" "this" {
       TOPIC                    = var.kafka_topic_name
       REGISTRY_NAME            = aws_glue_registry.this.registry_name
       SCHEMA_NAME              = var.schema_name
-      SCHEMA_PATHNAME          = var.schema_pathname
+      SCHEMA_NAMESPACE          = var.schema_namespace
       DEVICE_ID                = "000001"
     }
   }

@@ -18,8 +18,8 @@ variable "allowed_service_principal_arns" {
   type        = list(string)
 }
 
-variable "schema_pathname" {
-  description = "Name of the Sensor schema avsc file."
+variable "schema_namespace" {
+  description = "Namespace of the Sensor schema."
   type        = string
 }
 

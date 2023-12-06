@@ -1,14 +1,8 @@
 package producer;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
-import org.apache.avro.Schema;
-import org.apache.avro.Schema.Parser;
-import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.ListTopicsResult;
@@ -25,7 +19,6 @@ import software.amazon.awssdk.services.glue.model.Compatibility;
 public class SensorDataProducer {
     private Properties properties;
     private String topic;
-    private String schemaPathname;
     private String bootstrapServersConfig;
     private String awsRegion;
     private String registryName;
@@ -34,14 +27,12 @@ public class SensorDataProducer {
 
     public SensorDataProducer(
             String topic,
-            String schemaPathname,
             String bootstrapServersConfig,
             String awsRegion,
             String registryName,
             String schemaName,
             boolean enableSSL) {
         this.topic = topic;
-        this.schemaPathname = schemaPathname;
         this.bootstrapServersConfig = bootstrapServersConfig;
         this.awsRegion = awsRegion;
         this.registryName = registryName;
@@ -66,35 +57,14 @@ public class SensorDataProducer {
         return properties;
     }
 
-    public boolean putKafkaRecord(GenericSensorData sensorData) {
+    public boolean putKafkaRecord(GenericRecord sensorRecord) {
 
         if (!createKafkaTopic()) {
             return false;
         }
 
-        GenericRecord sensor;
-
-        URL resource = this.getClass().getClassLoader().getResource(schemaPathname);
-
-        try {
-            Schema schemaSensor = new Parser().parse(new File(resource.getPath()));
-            sensor = new GenericData.Record(schemaSensor);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-
         KafkaProducer<String, GenericRecord> producer = new KafkaProducer<>(properties);
-        final ProducerRecord<String, GenericRecord> record = new ProducerRecord<>(topic, sensor);
-
-        Map<String, Object> sensorDataMap = sensorData.getSensorData();
-
-        for (Map.Entry<String, Object> entry : sensorDataMap.entrySet()) {
-            String key = entry.getKey();
-            Object value = entry.getValue();
-
-            sensor.put(key, value);
-        }
+        final ProducerRecord<String, GenericRecord> record = new ProducerRecord<>(topic, sensorRecord);
 
         producer.send(record);
         producer.flush();
