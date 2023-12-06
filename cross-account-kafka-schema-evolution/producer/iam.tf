@@ -38,7 +38,7 @@ data "aws_iam_policy_document" "cross_account_glue_access" {
       format("arn:aws:glue:%s:%s:schema/%s/*",
         data.aws_region.current.name,
         data.aws_caller_identity.current.account_id,
-        aws_glue_registry.this.registry_name)
+      aws_glue_registry.this.registry_name)
     ]
   }
 
@@ -46,7 +46,7 @@ data "aws_iam_policy_document" "cross_account_glue_access" {
     actions = [
       "glue:GetSchemaVersion"
     ]
-    resources = [ "*" ]
+    resources = ["*"]
   }
 }
 
