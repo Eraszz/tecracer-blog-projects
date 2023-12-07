@@ -150,6 +150,13 @@ data "aws_iam_policy_document" "glue_access" {
       aws_glue_registry.this.registry_name)
     ]
   }
+
+  statement {
+    actions = [
+      "glue:GetSchemaVersion"
+    ]
+    resources = ["*"]
+  }
 }
 
 resource "aws_iam_policy" "glue_access" {

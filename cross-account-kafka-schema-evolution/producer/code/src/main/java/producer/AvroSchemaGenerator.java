@@ -23,10 +23,10 @@ public class AvroSchemaGenerator {
     }
 
     public GenericRecord getGenericRecord(Map<String, Object> previousSchemaFieldsAndTypes) {
-        return convertMapToGenericRecord(generateAvroSchema(previousSchemaFieldsAndTypes));
+        return convertSchemaToGenericRecord(generateAvroSchema(previousSchemaFieldsAndTypes));
     }
 
-    private Schema generateAvroSchema(Map<String, Object> previousSchemaFieldsAndTypes) {
+    public Schema generateAvroSchema(Map<String, Object> previousSchemaFieldsAndTypes) {
         SchemaBuilder.RecordBuilder<Schema> recordBuilder = SchemaBuilder.record(schemaName)
                 .namespace(schemaNamespace);
         SchemaBuilder.FieldAssembler<Schema> fieldAssembler = recordBuilder.fields();
@@ -87,6 +87,19 @@ public class AvroSchemaGenerator {
         }
 
         return fieldAssembler.endRecord();
+    }
+
+        public GenericRecord convertSchemaToGenericRecord(Schema schema) {
+        GenericRecord genericRecord = new GenericData.Record(schema);
+
+        for (Map.Entry<String, Object> entry : dataObject.getSensorData().entrySet()) {
+            String fieldName = entry.getKey();
+            Object fieldValue = entry.getValue();
+
+            genericRecord.put(fieldName, fieldValue);
+        }
+
+        return genericRecord;
     }
 
     private Schema createUnionSchemaForList(String currentFieldType, String fieldName,
@@ -167,16 +180,4 @@ public class AvroSchemaGenerator {
         }
     }
 
-    private GenericRecord convertMapToGenericRecord(Schema schema) {
-        GenericRecord genericRecord = new GenericData.Record(schema);
-
-        for (Map.Entry<String, Object> entry : dataObject.getSensorData().entrySet()) {
-            String fieldName = entry.getKey();
-            Object fieldValue = entry.getValue();
-
-            genericRecord.put(fieldName, fieldValue);
-        }
-
-        return genericRecord;
-    }
 }
