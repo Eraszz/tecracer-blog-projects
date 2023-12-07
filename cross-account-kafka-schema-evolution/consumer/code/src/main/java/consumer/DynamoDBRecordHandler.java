@@ -50,15 +50,12 @@ public class DynamoDBRecordHandler {
                 if (value instanceof String) {
                     String stringValue = String.valueOf(value);
                     attributeValue = AttributeValue.builder().s(stringValue).build();
+                    item.put(key, attributeValue);
                 } else if (value instanceof Integer) {
                     String stringValue = String.valueOf(value);
                     attributeValue = AttributeValue.builder().n(stringValue).build();
-                } else {
-                    System.out.println(key + " has an unknown type");
-                    return null;
-                }
-
-                item.put(entry.getKey(), attributeValue);
+                    item.put(key, attributeValue);
+                }                
             }
         } catch (Exception e) {
             e.printStackTrace();
