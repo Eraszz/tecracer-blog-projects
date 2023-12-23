@@ -34,7 +34,7 @@ module "producer" {
 
   kafka_topic_name = var.application_name
   schema_name      = "sensor"
-  schema_namespace  = var.application_name
+  schema_namespace = var.application_name
 }
 
 ################################################################################
