@@ -7,6 +7,7 @@ import org.apache.avro.generic.GenericRecord;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Comparator;
 
 public class AvroSchemaGenerator {
     String schemaNamespace;
@@ -86,10 +87,10 @@ public class AvroSchemaGenerator {
             }
         }
 
-        return fieldAssembler.endRecord();
+        return sortSchemaAlphabetically(fieldAssembler.endRecord());
     }
 
-        public GenericRecord convertSchemaToGenericRecord(Schema schema) {
+    public GenericRecord convertSchemaToGenericRecord(Schema schema) {
         GenericRecord genericRecord = new GenericData.Record(schema);
 
         for (Map.Entry<String, Object> entry : dataObject.getSensorData().entrySet()) {
@@ -180,4 +181,27 @@ public class AvroSchemaGenerator {
         }
     }
 
+    private Schema sortSchemaAlphabetically(Schema originalSchema) {
+        List<Schema.Field> schemaFields = originalSchema.getFields();
+
+        schemaFields.sort(Comparator.comparing(Schema.Field::name));
+
+        SchemaBuilder.RecordBuilder<Schema> recordBuilder = SchemaBuilder.record(originalSchema.getName())
+                .namespace(originalSchema.getNamespace());
+        SchemaBuilder.FieldAssembler<Schema> fieldAssembler = recordBuilder.fields();
+
+        for (Schema.Field field : schemaFields) {
+            String fieldName = field.name();
+            Schema fieldSchema = field.schema();
+            boolean hasDefaultValue = originalSchema.getField(field.name()).hasDefaultValue();
+            
+            if (hasDefaultValue) {
+                fieldAssembler = fieldAssembler.name(fieldName).type(fieldSchema).withDefault(null);
+            } else {
+                fieldAssembler = fieldAssembler.name(fieldName).type(fieldSchema).noDefault();
+            }
+        }
+
+        return fieldAssembler.endRecord();
+    }
 }
