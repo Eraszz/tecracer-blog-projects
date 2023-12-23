@@ -18,8 +18,3 @@ variable "application_name" {
   description = "Name of the application."
   type        = string
 }
-
-variable "schema_version" {
-  description = "Version of the Sensor schema"
-  type        = string
-}

@@ -5,12 +5,12 @@
 provider "aws" {
   alias = "producer"
 
-  profile = "trc-hhagen"
+  profile = "xxxxxxxxx"
 
 }
 
 provider "aws" {
   alias = "consumer"
 
-  profile = "trc-hhagen-2"
+  profile = "xxxxxxxxx"
 }
