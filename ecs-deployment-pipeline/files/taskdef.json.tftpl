@@ -1,0 +1,32 @@
+{
+    "containerDefinitions": [ 
+       { 
+          "essential": true,
+          "name": "${container_name}",
+          "image": "<IMAGE1_NAME>",
+          "logConfiguration": { 
+             "logDriver": "awslogs",
+             "options": { 
+                "awslogs-group": "${awslogs_group}",
+                "awslogs-region": "${awslogs_region}",
+                "awslogs-stream-prefix": "${awslogs_stream_prefix}"
+             }
+          },
+          "portMappings": [ 
+             { 
+                "containerPort": ${container_port},
+                "hostPort": ${container_port},
+                "protocol": "tcp"
+             }
+          ]
+       }
+    ],
+    "cpu": "${container_cpu}",
+    "memory": "${container_memory}",
+    "executionRoleArn": "${container_execution_role_arn}",
+    "family": "fargate-task-definition",
+    "networkMode": "awsvpc",
+    "requiresCompatibilities": [ 
+        "FARGATE" 
+     ]
+ }

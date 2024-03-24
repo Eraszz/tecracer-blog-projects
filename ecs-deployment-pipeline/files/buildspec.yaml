@@ -1,0 +1,41 @@
+version: 0.2
+
+env:
+  exported-variables:
+    - IMAGE_URI
+phases:
+  install:
+    on-failure: ABORT
+    commands:
+      - sudo apt update -y
+  pre_build:
+    on-failure: ABORT
+    commands:
+      - ECR_ENDPOINT=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+      - ECR_REPOSITORY_URI=${ECR_ENDPOINT}/${REPOSITORY_NAME}
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_TAG=${COMMIT_HASH:=latest}
+
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_ENDPOINT}
+  build:
+    on-failure: ABORT
+    commands:
+      - echo Build started on `date`
+      - echo Building Docker image...
+ 
+      - docker build . -t ${ECR_REPOSITORY_URI}:latest
+      - docker tag ${ECR_REPOSITORY_URI}:latest ${ECR_REPOSITORY_URI}:${IMAGE_TAG}
+      - printf '{"ImageURI":"%s"}' ${ECR_REPOSITORY_URI}:latest > /imageDetail.json
+  post_build:
+    on-failure: ABORT
+    commands:
+      - echo pushing to Docker repository ${ECR_REPOSITORY_URI}
+      - docker push ${ECR_REPOSITORY_URI}:latest
+      - docker push ${ECR_REPOSITORY_URI}:${IMAGE_TAG}
+            
+      - IMAGE_URI=${ECR_REPOSITORY_URI}:${IMAGE_TAG}
+artifacts:
+  files: 
+    - /imageDetail.json
+  discard-paths: yes
