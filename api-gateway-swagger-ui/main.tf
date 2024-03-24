@@ -30,7 +30,7 @@ resource "aws_lambda_function" "orders_handler" {
   filename         = data.archive_file.orders_handler.output_path
   source_code_hash = data.archive_file.orders_handler.output_base64sha256
   handler          = "orders.handler"
-  runtime          = "nodejs18.x"
+  runtime          = "nodejs16.x"
 
 }
 
@@ -83,7 +83,7 @@ resource "aws_lambda_function" "swagger_ui_handler" {
   source_code_hash = data.archive_file.swagger_ui_handler.output_base64sha256
   handler          = "app.handler"
   layers           = [aws_lambda_layer_version.swagger_ui_handler.arn]
-  runtime          = "nodejs14.x"
+  runtime          = "nodejs16.x"
 
 }
 
@@ -105,7 +105,7 @@ resource "aws_lambda_layer_version" "swagger_ui_handler" {
   layer_name = "swagger-ui-commonLibs"
 
   filename            = "${path.module}/src/swagger-ui/build/commonLibs.zip"
-  compatible_runtimes = ["nodejs14.x"]
+  compatible_runtimes = ["nodejs16.x"]
 
   #  depends_on = [
   #    data.archive_file.commonLibs
