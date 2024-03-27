@@ -30,5 +30,3 @@ container_image  = "httpd:2.4.58"
 container_port   = 80
 container_cpu    = 1024
 container_memory = 2048
-
-sns_endpoint = "xxxxxxxxx"

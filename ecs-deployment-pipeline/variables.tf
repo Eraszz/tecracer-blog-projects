@@ -53,8 +53,3 @@ variable "container_memory" {
   description = "Memory of the FARGATE container."
   type        = number
 }
-
-variable "sns_endpoint" {
-  description = "Terraform version to install in CodeBuild Container"
-  type        = string
-}

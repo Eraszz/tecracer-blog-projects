@@ -163,17 +163,17 @@ data "aws_iam_policy_document" "static" {
 resource "aws_s3_object" "static" {
   bucket = aws_s3_bucket.static.id
   key    = "static.zip"
-  source = "${path.module}/files/static.zip"
+  source = "${path.module}/src/static.zip"
 }
 
 # Archive multiple files and exclude file.
 
 data "archive_file" "static" {
   type        = "zip"
-  output_path = "${path.module}/files/static.zip"
+  output_path = "${path.module}/src/static.zip"
 
   source {
-    content = templatefile("${path.module}/files/appspec.yaml.tftpl", {
+    content = templatefile("${path.module}/src/appspec.yaml.tftpl", {
       container_name = var.application_name
       container_port = var.container_port
     })
@@ -181,7 +181,7 @@ data "archive_file" "static" {
   }
 
   source {
-    content = templatefile("${path.module}/files/taskdef.json.tftpl", {
+    content = templatefile("${path.module}/src/taskdef.json.tftpl", {
       container_name               = var.application_name
       container_port               = var.container_port
       container_cpu                = var.container_cpu

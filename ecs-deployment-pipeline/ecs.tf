@@ -17,7 +17,7 @@ resource "aws_ecs_cluster" "this" {
 
 resource "aws_ecs_task_definition" "this" {
   family = var.application_name
-  container_definitions = templatefile("${path.module}/files/container_definition.tftpl", {
+  container_definitions = templatefile("${path.module}/src/container_definition.tftpl", {
     container_name        = var.application_name
     container_image       = var.container_image
     container_port        = var.container_port

@@ -192,18 +192,8 @@ data "aws_iam_policy_document" "codepipeline" {
     resources = [
       aws_codedeploy_app.this.arn,
       aws_codedeploy_deployment_group.this.arn,
-      format("arn:aws:codedeploy:%s:%s:deploymentconfig:*",data.aws_region.current.name, data.aws_caller_identity.current.account_id),
-      format("arn:aws:ecs:%s:%s:task-definition/fargate-task-definition:*",data.aws_region.current.name, data.aws_caller_identity.current.account_id)
-    ]
-  }
-
-  statement {
-    sid = "snsaccess"
-    actions = [
-      "SNS:Publish"
-    ]
-    resources = [
-      aws_sns_topic.this.arn
+      format("arn:aws:codedeploy:%s:%s:deploymentconfig:*", data.aws_region.current.name, data.aws_caller_identity.current.account_id),
+      format("arn:aws:ecs:%s:%s:task-definition/fargate-task-definition:*", data.aws_region.current.name, data.aws_caller_identity.current.account_id)
     ]
   }
 
