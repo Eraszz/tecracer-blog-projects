@@ -1,0 +1,2 @@
+drop http any any -> any any (msg:"HTTP request received"; sid:1; rev:1;)
+alert icmp any any -> any any (msg:"ICMP request received"; sid:2; rev:1;)
