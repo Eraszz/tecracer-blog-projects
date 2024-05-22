@@ -50,7 +50,9 @@ data "aws_iam_policy_document" "efs" {
   statement {
     actions = [
       "elasticfilesystem:ClientMount",
-      "elasticfilesystem:ClientWrite"
+      "elasticfilesystem:ClientWrite",
+      "elasticfilesystem:ClientRootAccess",
+      "elasticfilesystem:DescribeMountTargets"
     ]
 
     effect = "Allow"

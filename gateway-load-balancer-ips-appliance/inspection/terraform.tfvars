@@ -23,5 +23,5 @@ private_subnets = {
 }
 
 application_name               = "gwlb-firewall-ips-inspection"
-allowed_service_principal_arns = ["arn:aws:iam::843934227598:root"]
+allowed_service_principal_arns = ["arn:aws:iam::xxxxxxxxxxx:root"]
 custom_rule_file_name          = "custom.rules"

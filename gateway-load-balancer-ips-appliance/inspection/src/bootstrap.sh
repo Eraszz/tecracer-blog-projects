@@ -137,6 +137,8 @@ ExecStart=/usr/bin/suricata -c /etc/suricata/suricata.yaml -q 0
 WantedBy=default.target
 EOF
 
+sudo aws s3 --region ${aws_region} sync s3://${s3_bucket_name} /var/lib/suricata/rules/ --include='${custom_rule_file_name}' --exact-timestamp
+
 sudo systemctl enable suricata.service
 sudo suricata-update
 sudo systemctl start suricata.service

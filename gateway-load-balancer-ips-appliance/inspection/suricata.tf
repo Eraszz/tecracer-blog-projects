@@ -19,6 +19,7 @@ resource "aws_launch_template" "this" {
     parameter_store_config_file_name = aws_ssm_parameter.this.name
     efs_id                           = aws_efs_file_system.this.id
     custom_rule_file_name            = var.custom_rule_file_name
+    s3_bucket_name                   = aws_s3_bucket.this.id
   }))
 
   block_device_mappings {
@@ -51,7 +52,6 @@ resource "aws_launch_template" "this" {
 
 }
 
-
 ################################################################################
 # EC2 Instance Profile
 ################################################################################
@@ -80,7 +80,125 @@ resource "aws_iam_instance_profile" "suricata" {
 
 resource "aws_iam_role_policy_attachment" "this" {
   role       = aws_iam_role.suricata.name
-  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+data "aws_iam_policy_document" "efs_access" {
+  statement {
+    actions = [
+      "elasticfilesystem:ClientMount",
+      "elasticfilesystem:ClientWrite"
+    ]
+
+    resources = [
+      aws_efs_file_system.this.arn
+    ]
+  }
+}
+
+resource "aws_iam_policy" "efs_access" {
+  name   = "efs-access"
+  policy = data.aws_iam_policy_document.efs_access.json
+}
+
+resource "aws_iam_role_policy_attachment" "efs_access" {
+  role       = aws_iam_role.suricata.name
+  policy_arn = aws_iam_policy.efs_access.arn
+}
+
+data "aws_iam_policy_document" "s3_access" {
+  statement {
+    actions = [
+      "s3:GetObject",
+      "s3:PutObject",
+      "s3:ListBucket"
+    ]
+
+    resources = [
+        aws_s3_bucket.this.arn,
+        "${aws_s3_bucket.this.arn}/*"
+    ]
+  }
+}
+
+resource "aws_iam_policy" "s3_access" {
+  name   = "s3-access"
+  policy = data.aws_iam_policy_document.s3_access.json
+}
+
+resource "aws_iam_role_policy_attachment" "s3_access" {
+  role       = aws_iam_role.suricata.name
+  policy_arn = aws_iam_policy.s3_access.arn
+}
+
+data "aws_iam_policy_document" "cw_access" {
+  statement {
+    actions = [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+        "logs:DescribeLogStreams"
+    ]
+
+    resources = [
+        "${aws_cloudwatch_log_group.suricata_log.arn}:*",
+        "${aws_cloudwatch_log_group.fast_log.arn}:*"
+    ]
+  }
+}
+
+resource "aws_iam_policy" "cw_access" {
+  name   = "cw-access"
+  policy = data.aws_iam_policy_document.cw_access.json
+}
+
+resource "aws_iam_role_policy_attachment" "cw_access" {
+  role       = aws_iam_role.suricata.name
+  policy_arn = aws_iam_policy.cw_access.arn
+}
+
+data "aws_iam_policy_document" "kms_access" {
+  statement {
+    actions = [
+      "kms:DescribeKey",
+      "kms:Decrypt"
+    ]
+
+    resources = [
+        aws_kms_key.this.arn
+    ]
+  }
+}
+
+resource "aws_iam_policy" "kms_access" {
+  name   = "kms-access"
+  policy = data.aws_iam_policy_document.kms_access.json
+}
+
+resource "aws_iam_role_policy_attachment" "kms_access" {
+  role       = aws_iam_role.suricata.name
+  policy_arn = aws_iam_policy.kms_access.arn
+}
+
+data "aws_iam_policy_document" "vpc_access" {
+  statement {
+    actions = [
+      "ec2:DescribeNetworkInterfaces"
+    ]
+
+    resources = [
+      "*"
+    ]
+  }
+}
+
+resource "aws_iam_policy" "vpc_access" {
+  name   = "vpc-access"
+  policy = data.aws_iam_policy_document.vpc_access.json
+}
+
+resource "aws_iam_role_policy_attachment" "vpc_access" {
+  role       = aws_iam_role.suricata.name
+  policy_arn = aws_iam_policy.vpc_access.arn
 }
 
 ################################################################################
