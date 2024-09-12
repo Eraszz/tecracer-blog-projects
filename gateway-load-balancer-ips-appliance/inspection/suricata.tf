@@ -202,7 +202,7 @@ resource "aws_iam_role_policy_attachment" "vpc_access" {
 }
 
 ################################################################################
-# Get newest Linux 2 AMI
+# Get Ubuntu AMI
 ################################################################################
 
 data "aws_ami" "this" {
