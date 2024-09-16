@@ -101,31 +101,6 @@ resource "aws_iam_role_policy_attachment" "efs_access" {
   policy_arn = aws_iam_policy.efs_access.arn
 }
 
-data "aws_iam_policy_document" "s3_access" {
-  statement {
-    actions = [
-      "s3:GetObject",
-      "s3:PutObject",
-      "s3:ListBucket"
-    ]
-
-    resources = [
-      aws_s3_bucket.this.arn,
-      "${aws_s3_bucket.this.arn}/*"
-    ]
-  }
-}
-
-resource "aws_iam_policy" "s3_access" {
-  name   = "s3-access"
-  policy = data.aws_iam_policy_document.s3_access.json
-}
-
-resource "aws_iam_role_policy_attachment" "s3_access" {
-  role       = aws_iam_role.zeek.name
-  policy_arn = aws_iam_policy.s3_access.arn
-}
-
 data "aws_iam_policy_document" "kms_access" {
   statement {
     actions = [

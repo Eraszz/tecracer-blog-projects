@@ -3,6 +3,7 @@
 
 # Local .terraform directories
 **/.terraform/*
+**/hashicorp
 
 # Terraform lockfile
 .terraform.lock.hcl

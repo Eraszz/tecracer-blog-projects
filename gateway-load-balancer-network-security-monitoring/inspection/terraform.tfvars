@@ -23,4 +23,4 @@ private_subnets = {
 }
 
 application_name               = "gwlb-nsm-inspection"
-allowed_service_principal_arns = ["arn:aws:iam::XXXXXXXXXXX:root", "arn:aws:iam::XXXXXXXXXXX:root"]
+allowed_service_principal_arns = ["arn:aws:iam::XXXXXXXXXXX:root"]
